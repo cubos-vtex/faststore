@@ -1,5 +1,3 @@
-TESTE
-
 <p align="center">
   <a href="https://faststore.dev">
     <img alt="Faststore" src="./packages/ui/static/logo.png" width="60" />
