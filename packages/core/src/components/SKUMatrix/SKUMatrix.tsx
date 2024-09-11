@@ -4,6 +4,7 @@ import {
   SKUMatrixSidebar as SKUMatrixSidebar,
   SKUMatrixTrigger as UISKUMatrixTrigger,
 } from '@faststore/ui'
+import { useFormattedPrice } from 'src/sdk/product/useFormattedPrice'
 import styles from './section.module.scss'
 
 interface SKUMatrixProps {
@@ -25,14 +26,8 @@ function SKUMatrix({ button: { label } }: SKUMatrixProps) {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         overlayProps={{ className: styles.section }}
-      >
-        <ul>
-          <li>Item 01</li>
-          <li>Item 02</li>
-          <li>Item 03</li>
-          <li>Item 04</li>
-        </ul>
-      </SKUMatrixSidebar>
+        formatter={useFormattedPrice}
+      />
     </div>
   )
 }

@@ -14,7 +14,7 @@ function SKUMatrixTrigger({
   onClick,
 }: SKUMatrixTriggerProps) {
   return (
-    <Button data-fs-sku-matrix-trigger onClick={onClick} variant={variant}>
+    <Button onClick={onClick} variant={variant}>
       {children}
     </Button>
   )

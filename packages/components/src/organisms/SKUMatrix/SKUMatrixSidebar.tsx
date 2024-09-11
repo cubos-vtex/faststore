@@ -1,6 +1,15 @@
 import React from 'react'
 import type { ReactNode, HTMLAttributes } from 'react'
 import SlideOver, { SlideOverHeader } from '../SlideOver'
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+} from '../../molecules/Table'
+import Price, { PriceFormatter } from '../../atoms/Price'
+import QuantitySelector from '../../molecules/QuantitySelector'
 import { SlideOverDirection, SlideOverWidthSize } from '../SlideOver'
 import { useFadeEffect } from '../../hooks'
 import { OverlayProps } from '../..'
@@ -44,10 +53,58 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
    */
   isOpen: boolean
   /**
+   * Formatter function that transforms the raw price value and render the result.
+   */
+  formatter?: PriceFormatter
+  /**
    * Function called when Close Button is clicked.
    */
+
   onClose: () => void
 }
+
+const mockTableData: {
+  sku: string
+  storage: string
+  color: string
+  stock: number
+  price: number
+  quantity: number
+}[] = [
+  {
+    sku: 'SGS23U-256GRN-EU',
+    storage: '256GB | 8GB',
+    color: 'Green',
+    stock: 84,
+    price: 1249.9,
+    quantity: 0,
+  },
+  {
+    sku: 'SGS23U-256BLK-EU',
+    storage: '256GB | 8GB',
+    color: 'Lavender',
+    stock: 90,
+    price: 1249.9,
+    quantity: 0,
+  },
+  {
+    sku: 'SGS23U-256LVD-EU',
+    storage: '512GB | 8GB',
+    color: 'Phantom Black',
+    stock: 48,
+    price: 1249.9,
+    quantity: 0,
+  },
+]
+
+const tableColumns: string[] = [
+  'Part Number',
+  'Storage',
+  'Color',
+  'Stock (unit)',
+  'Price (Tax included)',
+  'Quantity',
+]
 
 function SKUMatrixSidebar({
   direction = 'rightSide',
@@ -57,6 +114,7 @@ function SKUMatrixSidebar({
   isOpen,
   children,
   // totalitems = 0,
+  formatter,
   onClose,
   ...otherProps
 }: SKUMatrixSidebarProps) {
@@ -82,6 +140,38 @@ function SKUMatrixSidebar({
       </SlideOverHeader>
 
       {children}
+
+      <Table variant="bordered">
+        <TableHead>
+          <TableRow>
+            {tableColumns.map((columnName) => (
+              <TableCell key={columnName}>{columnName}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {mockTableData.map((item) => (
+            <TableRow key={item.sku}>
+              <TableCell data-fs-sku-matrix-sidebar-table-cell>
+                {item.sku}
+              </TableCell>
+              <TableCell>{item.storage}</TableCell>
+              <TableCell>{item.color}</TableCell>
+              <TableCell>{item.stock}</TableCell>
+              <TableCell data-fs-sku-matrix-sidebar-table-cell>
+                <Price
+                  value={item.price}
+                  variant="spot"
+                  formatter={formatter}
+                />
+              </TableCell>
+              <TableCell>
+                <QuantitySelector min={0} initial={item.quantity} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </SlideOver>
   )
 }

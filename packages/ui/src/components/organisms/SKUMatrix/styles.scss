@@ -1,11 +1,11 @@
 [data-fs-sku-matrix-sidebar] {
   // --------------------------------------------------------
-  // Design Tokens for Cart Sidebar
+  // Design Tokens for SKU Matrix Sidebar
   // --------------------------------------------------------
 
   // Default properties
-  --fs-sku-matrix-sidebar-bkg-color: var(--fs-color-neutral-bkg);
-  --fs-sku-matrix-sidebar-title-bkg-color: var(--fs-color-neutral-0);
+  --fs-sku-matrix-sidebar-bkg-color: var(--fs-color-neutral-0);
+  --fs-sku-matrix-sidebar-table-cell-font-weight: var(--fs-text-weight-medium);
 
   // --------------------------------------------------------
   // Structural Styles
@@ -17,10 +17,24 @@
   overflow: auto;
 
   &[data-fs-slide-over] {
-    background-color: var(--fs-cart-sidebar-bkg-color);
+    background-color: var(--fs-sku-matrix-sidebar-bkg-color);
   }
 
   > * {
     flex-shrink: 0;
+  }
+
+  [data-fs-sku-matrix-sidebar-table-cell] {
+    font-weight: var(--fs-sku-matrix-sidebar-table-cell-font-weight);
+
+    [data-fs-price-variant='spot'] {
+      font-weight: inherit;
+    }
+  }
+
+  [data-fs-quantity-selector] {
+    [data-fs-icon] {
+      margin: 0;
+    }
   }
 }
