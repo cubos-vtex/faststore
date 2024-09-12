@@ -151,6 +151,7 @@ const tableColumns: string[] = [
   'Color',
   'Stock (unit)',
   'Price (Tax included)',
+  '',
   'Quantity',
 ]
 
@@ -158,7 +159,7 @@ function SKUMatrixSidebar({
   direction = 'rightSide',
   title,
   overlayProps,
-  size = 'full',
+  size = 'partial',
   isOpen,
   children,
   // totalitems = 0,
@@ -216,7 +217,12 @@ function SKUMatrixSidebar({
         <TableHead>
           <TableRow>
             {tableColumns.map((columnName) => (
-              <TableCell key={columnName} align="left">
+              <TableCell
+                key={columnName}
+                align={columnName.includes('Price') ? 'right' : 'left'}
+                variant="header"
+                scope="col"
+              >
                 {columnName}
               </TableCell>
             ))}
@@ -236,23 +242,28 @@ function SKUMatrixSidebar({
               <TableCell align="left">{item.color}</TableCell>
               <TableCell align="left">{item.stock}</TableCell>
               <TableCell align="left" data-fs-sku-matrix-sidebar-table-cell>
-                <Price
-                  value={item.price}
-                  variant="spot"
-                  formatter={formatter}
-                />
+                <div data-fs-sku-matrix-sidebar-table-price>
+                  <Price
+                    value={item.price}
+                    variant="spot"
+                    formatter={formatter}
+                  />
+                </div>
               </TableCell>
+              <TableCell />
               <TableCell
-                align="left"
+                align="right"
                 data-fs-sku-matrix-sidebar-table-cell-quantity-selector
               >
-                <QuantitySelector
-                  min={0}
-                  initial={item.quantity}
-                  onChange={(value) =>
-                    heandleQuantityChange(item.partNumber, value)
-                  }
-                />
+                <div data-fs-sku-matrix-sidebar-table-action>
+                  <QuantitySelector
+                    min={0}
+                    initial={item.quantity}
+                    onChange={(value) =>
+                      heandleQuantityChange(item.partNumber, value)
+                    }
+                  />
+                </div>
               </TableCell>
             </TableRow>
           ))}

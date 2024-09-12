@@ -53,8 +53,11 @@
     color: #5c5c5c;
 
     [data-fs-table-cell] {
-      padding-left: 0;
       padding-right: 0;
+
+      &:first-child {
+        padding-left: 0;
+      }
     }
   }
 
@@ -76,6 +79,16 @@
     [data-fs-price-variant='spot'] {
       font-weight: inherit;
     }
+  }
+
+  [data-fs-sku-matrix-sidebar-table-price] {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  [data-fs-sku-matrix-sidebar-table-cell-quantity-selector] {
+    width: 1%;
   }
 
   [data-fs-quantity-selector] {
