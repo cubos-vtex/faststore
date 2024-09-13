@@ -1,20 +1,19 @@
 import React from 'react'
-import type { ReactNode } from 'react'
 import Button from '../../atoms/Button'
 import type { ButtonProps } from '../../atoms/Button'
+import { useSKUMatrix } from './SKUMatrix'
 
-export interface SKUMatrixTriggerProps extends Pick<ButtonProps, 'variant'> {
-  children: ReactNode
-  onClick(): void
-}
+export type SKUMatrixTriggerProps = Omit<ButtonProps, 'onClick'>
 
 function SKUMatrixTrigger({
   children,
   variant = 'secondary',
-  onClick,
+  ...otherProps
 }: SKUMatrixTriggerProps) {
+  const { setOpen } = useSKUMatrix()
+
   return (
-    <Button onClick={onClick} variant={variant}>
+    <Button variant={variant} onClick={() => setOpen(true)} {...otherProps}>
       {children}
     </Button>
   )

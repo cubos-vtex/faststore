@@ -9,10 +9,11 @@ import {
   TableCell,
 } from '../../molecules/Table'
 import Price, { PriceFormatter } from '../../atoms/Price'
-import QuantitySelector from '../../molecules/QuantitySelector'
 import { SlideOverDirection, SlideOverWidthSize } from '../SlideOver'
 import { useFadeEffect } from '../../hooks'
-import { Button, OverlayProps } from '../..'
+import { Badge, Button, OverlayProps, QuantitySelector } from '../..'
+import { mockTableData, tableColumns } from './mock'
+import { useSKUMatrix } from './SKUMatrix'
 
 export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
   /**
@@ -49,125 +50,30 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
    */
   overlayProps?: OverlayProps
   /**
-   * Show slide over.
-   */
-  isOpen: boolean
-  /**
    * Formatter function that transforms the raw price value and render the result.
    */
   formatter?: PriceFormatter
-  /**
-   * Function called when Close Button is clicked.
-   */
-
-  onClose: () => void
 }
 
-const mockTableData: {
-  partNumber: string
-  storage: string
-  color: string
-  stock: number
-  price: number
-  quantity: number
-}[] = [
-  {
-    partNumber: 'SGS23U-256GRN-EU',
-    storage: '256GB | 8GB',
-    color: 'Green',
-    stock: 84,
-    price: 1249.9,
-    quantity: 0,
-  },
-  {
-    partNumber: 'SGS23U-256BLK-EU',
-    storage: '256GB | 8GB',
-    color: 'Lavender',
-    stock: 90,
-    price: 1249.9,
-    quantity: 0,
-  },
-  {
-    partNumber: 'SGS23U-256LVD-EU',
-    storage: '512GB | 8GB',
-    color: 'Phantom Black',
-    stock: 48,
-    price: 1249.9,
-    quantity: 0,
-  },
-  {
-    partNumber: 'SGS23U-128LVD-EU',
-    storage: '128GB | 4GB',
-    color: 'Phantom Black',
-    stock: 23,
-    price: 989.9,
-    quantity: 0,
-  },
-  {
-    partNumber: 'SGS24U-128LVD-EU',
-    storage: '128GB | 6GB',
-    color: 'Black',
-    stock: 29,
-    price: 989.9,
-    quantity: 0,
-  },
-  {
-    partNumber: 'SGS25U-128LVD-EU',
-    storage: '128GB | 6GB',
-    color: 'Green',
-    stock: 45,
-    price: 989.9,
-    quantity: 0,
-  },
-  {
-    partNumber: 'SGS22U-512LVD-EU',
-    storage: '512GB | 6GB',
-    color: 'Gray',
-    stock: 45,
-    price: 989.9,
-    quantity: 0,
-  },
-  {
-    partNumber: 'SGS27U-512LVD-EU',
-    storage: '512GB | 6GB',
-    color: 'White',
-    stock: 89,
-    price: 989.9,
-    quantity: 0,
-  },
-  {
-    partNumber: 'SGS18U-256LVD-EU',
-    storage: '256GB | 8GB',
-    color: 'White',
-    stock: 54,
-    price: 1089.9,
-    quantity: 0,
-  },
-]
-
-const tableColumns: string[] = [
-  'Part Number',
-  'Storage',
-  'Color',
-  'Stock (unit)',
-  'Price (Tax included)',
-  '',
-  'Quantity',
-]
+// const skeletonSizes = [{ width: '200px', height: '48px' }].concat(
+//   Array.from<{ width: string; height: string }>({ length: 6 }).fill({
+//     width: '125px',
+//     height: '48px',
+//   })
+// )
 
 function SKUMatrixSidebar({
   direction = 'rightSide',
   title,
   overlayProps,
   size = 'partial',
-  isOpen,
   children,
   // totalitems = 0,
   formatter,
-  onClose,
   ...otherProps
 }: SKUMatrixSidebarProps) {
   const { fade } = useFadeEffect()
+  const { open, setOpen } = useSKUMatrix()
 
   const [cartItems, setCartItems] = useState(mockTableData)
 
@@ -196,7 +102,7 @@ function SKUMatrixSidebar({
   return (
     <SlideOver
       data-fs-sku-matrix-sidebar
-      isOpen={isOpen}
+      isOpen={open}
       fade={fade}
       size={size}
       direction={direction}
@@ -205,7 +111,7 @@ function SKUMatrixSidebar({
     >
       <SlideOverHeader
         onClose={() => {
-          onClose()
+          setOpen(false)
         }}
       >
         <h2 data-fs-sku-matrix-sidebar-title>{title}</h2>
@@ -231,17 +137,19 @@ function SKUMatrixSidebar({
         <TableBody>
           {cartItems.map((item) => (
             <TableRow key={item.partNumber}>
-              <TableCell
-                data-fs-sku-matrix-sidebar-table-cell
-                data-fs-sku-matrix-sidebar-table-cell-first
-                align="left"
-              >
-                {item.partNumber}
-              </TableCell>
+              <TableCell align="left">{item.partNumber}</TableCell>
               <TableCell align="left">{item.storage}</TableCell>
               <TableCell align="left">{item.color}</TableCell>
-              <TableCell align="left">{item.stock}</TableCell>
-              <TableCell align="left" data-fs-sku-matrix-sidebar-table-cell>
+              <TableCell align="left">
+                <Badge
+                  variant={
+                    item.availability === 'available' ? 'success' : 'warning'
+                  }
+                >
+                  {item.availability}
+                </Badge>
+              </TableCell>
+              <TableCell align="left">
                 <div data-fs-sku-matrix-sidebar-table-price>
                   <Price
                     value={item.price}
@@ -258,6 +166,7 @@ function SKUMatrixSidebar({
                 <div data-fs-sku-matrix-sidebar-table-action>
                   <QuantitySelector
                     min={0}
+                    disabled={item.availability !== 'available'}
                     initial={item.quantity}
                     onChange={(value) =>
                       heandleQuantityChange(item.partNumber, value)
