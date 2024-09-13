@@ -55,20 +55,12 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
   formatter?: PriceFormatter
 }
 
-// const skeletonSizes = [{ width: '200px', height: '48px' }].concat(
-//   Array.from<{ width: string; height: string }>({ length: 6 }).fill({
-//     width: '125px',
-//     height: '48px',
-//   })
-// )
-
 function SKUMatrixSidebar({
   direction = 'rightSide',
   title,
   overlayProps,
   size = 'partial',
   children,
-  // totalitems = 0,
   formatter,
   ...otherProps
 }: SKUMatrixSidebarProps) {

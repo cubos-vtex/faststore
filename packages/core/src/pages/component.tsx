@@ -1,9 +1,12 @@
-import SKUMatrix from 'src/components/SKUMatrix'
+import { SKUMatrix, SKUMatrixTrigger, SKUMatrixSidebar } from '@faststore/ui'
 
 function Page() {
   return (
     <div>
-      <SKUMatrix button={{ label: 'Selecionar multiplos' }} />
+      <SKUMatrix>
+        <SKUMatrixTrigger>Selecionar multiplos</SKUMatrixTrigger>
+        <SKUMatrixSidebar />
+      </SKUMatrix>
     </div>
   )
 }

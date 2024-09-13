@@ -85,7 +85,8 @@
     font-weight: var(--fs-sku-matrix-sidebar-text-weight-medium);
   }
 
-  [data-fs-table-cell]:first-child {
+  [data-fs-table-cell]:first-child,
+  [data-fs-sku-matrix-sidebar-table-price] {
     // FIXME - Criar variável?
     color: #1f1f1f;
   }

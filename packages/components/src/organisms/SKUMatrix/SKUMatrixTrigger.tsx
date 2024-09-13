@@ -1,22 +1,31 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import Button from '../../atoms/Button'
 import type { ButtonProps } from '../../atoms/Button'
 import { useSKUMatrix } from './SKUMatrix'
 
-export type SKUMatrixTriggerProps = Omit<ButtonProps, 'onClick'>
+export type SKUMatrixTriggerProps = ButtonProps
 
-function SKUMatrixTrigger({
-  children,
-  variant = 'secondary',
-  ...otherProps
-}: SKUMatrixTriggerProps) {
-  const { setOpen } = useSKUMatrix()
+const SKUMatrixTrigger = forwardRef<HTMLButtonElement, SKUMatrixTriggerProps>(
+  function SKUMatrixTrigger(
+    { children, variant = 'secondary', onClick, ...otherProps },
+    ref
+  ) {
+    const { setOpen } = useSKUMatrix()
 
-  return (
-    <Button variant={variant} onClick={() => setOpen(true)} {...otherProps}>
-      {children}
-    </Button>
-  )
-}
+    return (
+      <Button
+        ref={ref}
+        variant={variant}
+        onClick={(event) => {
+          setOpen(true)
+          onClick?.(event)
+        }}
+        {...otherProps}
+      >
+        {children}
+      </Button>
+    )
+  }
+)
 
 export default SKUMatrixTrigger

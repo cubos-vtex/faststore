@@ -1,30 +1,37 @@
-import { useState } from 'react'
-
 import {
   SKUMatrix as UISKUMatrix,
-  SKUMatrixSidebar as UISKUMatrixSidebar,
-  SKUMatrixTrigger as UISKUMatrixTrigger,
+  SKUMatrixProps as UISKUMatrixProps,
 } from '@faststore/ui'
-import { useFormattedPrice } from 'src/sdk/product/useFormattedPrice'
-import styles from './section.module.scss'
 
-interface SKUMatrixProps {
-  button: {
-    label: string
-  }
-}
+type SKUMatrixProps = UISKUMatrixProps
 
-function SKUMatrix({ button: { label } }: SKUMatrixProps) {
-  return (
-    <UISKUMatrix>
-      <UISKUMatrixTrigger>{label}</UISKUMatrixTrigger>
-      <UISKUMatrixSidebar
-        title="Galaxy S23 Ultra"
-        overlayProps={{ className: styles.section }}
-        formatter={useFormattedPrice}
-      />
-    </UISKUMatrix>
-  )
+function SKUMatrix(props: SKUMatrixProps) {
+  return <UISKUMatrix {...props} />
 }
 
 export default SKUMatrix
+
+// import {
+//   SKUMatrix as UISKUMatrix,
+//   SKUMatrixProps as UISKUMatrixProps,
+//   SKUMatrixTrigger as UISKUMatrixTrigger,
+//   SKUMatrixSidebar as UISKUMatrixSidebar,
+// } from '@faststore/ui'
+
+// import styles from './SKUMatrixSidebar/section.module.scss'
+
+// type SKUMatrixProps = UISKUMatrixProps
+
+// function SKUMatrix(props: SKUMatrixProps) {
+//   return (
+//     <UISKUMatrix className="section" {...props}>
+//       <UISKUMatrixTrigger>Selecionar multiplos</UISKUMatrixTrigger>
+//       <UISKUMatrixSidebar
+//         overlayProps={{ className: styles.section }}
+//         title="Nome do produto"
+//       />
+//     </UISKUMatrix>
+//   )
+// }
+
+// export default SKUMatrix
