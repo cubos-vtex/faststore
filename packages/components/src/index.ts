@@ -358,10 +358,12 @@ export type {
 } from './organisms/SlideOver'
 
 export {
-  default as SKUMatrixTrigger,
+  default as SKUMatrix,
+  SKUMatrixTrigger,
   SKUMatrixSidebar,
 } from './organisms/SKUMatrix'
 export type {
   SKUMatrixTriggerProps,
   SKUMatrixSidebarProps,
+  SKUMatrixProps,
 } from './organisms/SKUMatrix'

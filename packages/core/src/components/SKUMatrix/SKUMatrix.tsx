@@ -1,7 +1,8 @@
 import { useState } from 'react'
 
 import {
-  SKUMatrixSidebar as SKUMatrixSidebar,
+  SKUMatrix as UISKUMatrix,
+  SKUMatrixSidebar as UISKUMatrixSidebar,
   SKUMatrixTrigger as UISKUMatrixTrigger,
 } from '@faststore/ui'
 import { useFormattedPrice } from 'src/sdk/product/useFormattedPrice'
@@ -14,21 +15,15 @@ interface SKUMatrixProps {
 }
 
 function SKUMatrix({ button: { label } }: SKUMatrixProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(false)
-
   return (
-    <div>
-      <UISKUMatrixTrigger onClick={() => setIsOpen(true)}>
-        {label}
-      </UISKUMatrixTrigger>
-      <SKUMatrixSidebar
+    <UISKUMatrix>
+      <UISKUMatrixTrigger>{label}</UISKUMatrixTrigger>
+      <UISKUMatrixSidebar
         title="Galaxy S23 Ultra"
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
         overlayProps={{ className: styles.section }}
         formatter={useFormattedPrice}
       />
-    </div>
+    </UISKUMatrix>
   )
 }
 
