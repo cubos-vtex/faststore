@@ -8,6 +8,10 @@ type SkuVariants {
   """
   allVariantsByName: VariantsByName
   """
+  Teste colocando o retorno como String. Ver o código do resolver em packages/api/src/platforms/vtex/resolvers/skuVariations.ts
+  """
+  allSkuVariants: String
+  """
   Maps property value combinations to their respective SKU's slug. Enables
   us to retrieve the slug for the SKU that matches the currently selected
   variations in O(1) time.

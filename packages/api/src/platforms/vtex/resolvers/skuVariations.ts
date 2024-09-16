@@ -26,6 +26,14 @@ export const SkuVariants: Record<string, Resolver<Root>> = {
       root.isVariantOf.linkText
     ),
 
+  /*
+  Implementei aqui o que está definido em src/typeDefs/skuVariants.graphql, retornando um string só para teste, mas ainda assim dá o erro "Error: SkuVariants.allSkuVariants defined in resolvers, but not in schema". Por isso deixei comentado. Precisamos tirar a dúvida do que precisa mais. Creio que devemos manipular esse root para formar o objeto necessário no frontend.
+  */
+  // allSkuVariants: (root) => {
+  //   console.log('root:', root)
+  //   return "teste all sku variants"
+  // },
+
   availableVariations: (root, args) => {
     const dominantVariantName = (args as SlugsMapArgs).dominantVariantName ?? root.variations[0]?.name
     const activeVariations = getActiveSkuVariations(root.variations)

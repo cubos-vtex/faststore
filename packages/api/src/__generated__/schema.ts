@@ -587,6 +587,8 @@ export type SkuVariants = {
   __typename?: 'SkuVariants';
   /** SKU property values for the current SKU. */
   activeVariations?: Maybe<Scalars['ActiveVariations']>;
+  /** Teste colocando o retorno como String. Ver o código do resolver em packages/api/src/platforms/vtex/resolvers/skuVariations.ts */
+  allSkuVariants?: Maybe<Scalars['String']>;
   /** All available options for each SKU variant property, indexed by their name. */
   allVariantsByName?: Maybe<Scalars['VariantsByName']>;
   /**

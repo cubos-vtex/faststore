@@ -1,3 +1,7 @@
+/*
+  O export abaixo faz com que tudo de @faststore/components seja exportado junto com o @faststore/ui.
+  Por isso que `import { X } from "@faststore/ui"` dá no mesmo que `import { X } from "@faststore/components"`
+*/
 export * from '@faststore/components'
 
 // Atoms

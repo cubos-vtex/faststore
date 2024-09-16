@@ -29,6 +29,9 @@ import { SearchArgs } from '../clients/search'
 
 export const Query = {
   product: async (_: unknown, { locator }: QueryProductArgs, ctx: Context) => {
+    console.log('=========================================')
+    console.log('Query.product\n')
+
     // Insert channel in context for later usage
     const channel = findChannel(locator)
     const locale = findLocale(locator)
@@ -54,6 +57,8 @@ export const Query = {
       if (!isValidSkuId(skuId)) {
         throw new Error('Invalid SkuId')
       }
+
+      console.log('skuId:', skuId)
 
       const sku = await skuLoader.load(skuId)
 

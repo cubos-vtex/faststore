@@ -140,6 +140,10 @@ export const IntelligentSearch = (
       .map(({ key, value }) => `${key}/${value}`)
       .join('/')
 
+    /*
+    Aqui é onde acontece a chamada da API para recuperar o produto!
+    Por algum motivo eles usam o endpoint de busca (https://developers.vtex.com/docs/api-reference/intelligent-search-api#get-/product_search/-facets-) em vez de usar o de recuperar um produto (https://developers.vtex.com/docs/api-reference/catalog-api#get-/api/catalog/pvt/product/-productId-).
+    */
     return fetchAPI(
       `${base}/_v/api/intelligent-search/${type}/${pathname}?${params.toString()}`,
       undefined,
