@@ -9,6 +9,9 @@ import {
   QuantitySelector as UIQuantitySelector,
   ImageGalleryViewer as UIImageGalleryViewer,
   ImageGallery as UIImageGallery,
+  SKUMatrix as UISKUMatrix,
+  SKUMatrixSidebar as UISKUMatrixSidebar,
+  SKUMatrixTrigger as UISKUMatrixTrigger,
 } from '@faststore/ui'
 
 import LocalImageGallery from 'src/components/ui/ImageGallery'
@@ -29,6 +32,9 @@ export const ProductDetailsDefaultComponents = {
   ShippingSimulation: UIShippingSimulation,
   ImageGallery: UIImageGallery,
   ImageGalleryViewer: UIImageGalleryViewer,
+  SKUMatrix: UISKUMatrix,
+  SKUMatrixTrigger: UISKUMatrixTrigger,
+  SKUMatrixSidebar: UISKUMatrixSidebar,
   __experimentalImageGalleryImage: Image,
   __experimentalImageGallery: LocalImageGallery,
   __experimentalShippingSimulation: LocalShippingSimulation,

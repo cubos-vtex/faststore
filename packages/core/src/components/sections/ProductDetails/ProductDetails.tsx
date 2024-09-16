@@ -82,6 +82,9 @@ function ProductDetails({
   const {
     DiscountBadge,
     ProductTitle,
+    SKUMatrix,
+    SKUMatrixTrigger,
+    SKUMatrixSidebar,
     __experimentalImageGallery: ImageGallery,
     __experimentalShippingSimulation: ShippingSimulation,
     __experimentalNotAvailableButton: NotAvailableButton,
@@ -212,6 +215,25 @@ function ProductDetails({
                 isValidating={isValidating}
                 taxesConfiguration={taxesConfiguration}
               />
+
+              {true && (
+                <>
+                  <div data-fs-product-details-settings-separator />
+                  {isValidating ? (
+                    //FIXME - Adicionar estado de loading?
+                    'Carregando...'
+                  ) : (
+                    <SKUMatrix.Component>
+                      <SKUMatrixTrigger.Component>
+                        Select multiples
+                      </SKUMatrixTrigger.Component>
+                      <SKUMatrixSidebar.Component
+                        overlayProps={{ className: styles.section }}
+                      />
+                    </SKUMatrix.Component>
+                  )}
+                </>
+              )}
             </section>
 
             {!outOfStock && (
