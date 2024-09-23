@@ -50,6 +50,10 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
    */
   overlayProps?: OverlayProps
   /**
+   * Aditional columns.
+   */
+  columns?: Array<{ label: string }>
+  /**
    * Formatter function that transforms the raw price value and render the result.
    */
   formatter?: PriceFormatter
@@ -61,6 +65,7 @@ function SKUMatrixSidebar({
   overlayProps,
   size = 'partial',
   children,
+  columns,
   formatter,
   ...otherProps
 }: SKUMatrixSidebarProps) {

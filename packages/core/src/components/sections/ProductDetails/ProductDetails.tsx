@@ -56,6 +56,11 @@ export interface ProductDetailsProps {
     usePriceWithTaxes?: boolean
     taxesLabel?: string
   }
+  skuMatrix: {
+    shouldDisplaySKUMatrix?: boolean
+    triggerButtonLabel: string
+    columns: Array<{ label: string }>
+  }
 }
 
 function ProductDetails({
@@ -74,6 +79,10 @@ function ProductDetails({
     title: productDescriptionDetailsTitle,
     initiallyExpanded: productDescriptionInitiallyExpanded,
     displayDescription: shouldDisplayProductDescription,
+  },
+  skuMatrix: {
+    triggerButtonLabel: skuMatrixTriggerLabel,
+    shouldDisplaySKUMatrix,
   },
   notAvailableButton: { title: notAvailableButtonTitle },
   quantitySelector,
@@ -216,22 +225,18 @@ function ProductDetails({
                 taxesConfiguration={taxesConfiguration}
               />
 
-              {true && (
+              {shouldDisplaySKUMatrix && (
                 <>
-                  <div data-fs-product-details-settings-separator />
-                  {isValidating ? (
-                    //FIXME - Adicionar estado de loading?
-                    'Carregando...'
-                  ) : (
-                    <SKUMatrix.Component>
-                      <SKUMatrixTrigger.Component>
-                        Select multiples
-                      </SKUMatrixTrigger.Component>
-                      <SKUMatrixSidebar.Component
-                        overlayProps={{ className: styles.section }}
-                      />
-                    </SKUMatrix.Component>
-                  )}
+                  <div data-fs-product-details-settings-separator>Or</div>
+
+                  <SKUMatrix.Component>
+                    <SKUMatrixTrigger.Component disabled={isValidating}>
+                      {skuMatrixTriggerLabel}
+                    </SKUMatrixTrigger.Component>
+                    <SKUMatrixSidebar.Component
+                      overlayProps={{ className: styles.section }}
+                    />
+                  </SKUMatrix.Component>
                 </>
               )}
             </section>

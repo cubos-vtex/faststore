@@ -6,6 +6,7 @@
     --fs-product-details-taxes-text-weight: var(--fs-text-weight-regular);
 
     --fs-product-details-separator-color: var(--fs-color-neutral-2);
+    --fs-product-details-separator-color-text: var(--fs-color-text-light);
 
     margin-top: 0;
 
@@ -41,9 +42,27 @@
     }
 
     [data-fs-product-details-settings-separator] {
-      width: 100%;
-      height: 1px;
-      background-color: var(--fs-product-details-separator-color);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--fs-product-details-separator-color-text);
+
+      &::after {
+        display: inline-block;
+        width: 45%;
+        height: 1px;
+        content: "";
+        background-color: var(--fs-product-details-separator-color);
+      }
+
+      &::before {
+        display: inline-block;
+        width: 45%;
+        height: 1px;
+        content: "";
+        background-color: var(--fs-product-details-separator-color);
+      }
     }
 
     [data-fs-sku-matrix] {

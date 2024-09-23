@@ -1618,6 +1618,36 @@
               "default": "Tax included"
             }
           }
+        },
+        "skuMatrix": {
+          "title": "SKUMatrix Configuration",
+          "type": "object",
+          "properties": {
+            "shouldDisplaySKUMatrix": {
+              "title": "Should display SKUMatrix?",
+              "type": "boolean",
+              "default": "false"
+            },
+            "triggerButtonLabel": {
+              "title": "SKU Matrix Trigger label to be displayed",
+              "type": "string",
+              "default": "Select multiple"
+            },
+            "columns": {
+              "title": "Columns",
+              "type": "array",
+              "items": {
+                "title": "Column",
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "title": "Column name",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
