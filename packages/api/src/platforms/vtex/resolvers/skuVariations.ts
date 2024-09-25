@@ -4,6 +4,7 @@ import type { StoreProduct } from './product'
 import {
   createSlugsMap,
   getActiveSkuVariations,
+  getFormattedAllVariantProducts,
   getFormattedVariations,
   getVariantsByName,
 } from '../utils/skuVariants'
@@ -40,4 +41,5 @@ export const SkuVariants: Record<string, Resolver<Root>> = {
 
     return filteredFormattedVariations
   },
+  allVariantProducts: (root) => (root.isVariantOf.items),
 }

@@ -576,6 +576,7 @@ export type ShippingSla = {
 export type SkuVariants = {
   /** SKU property values for the current SKU. */
   activeVariations: Maybe<Scalars['ActiveVariations']['output']>
+  allVariantProducts: Maybe<Array<StoreProduct>>
   /** All available options for each SKU variant property, indexed by their name. */
   allVariantsByName: Maybe<Scalars['VariantsByName']['output']>
   /**
@@ -595,6 +596,10 @@ export type SkuVariants = {
    * considered the dominant one.
    */
   slugsMap: Maybe<Scalars['SlugsMap']['output']>
+}
+
+export type SkuVariantsAllVariantProductsArgs = {
+  productID: InputMaybe<Scalars['String']['input']>
 }
 
 export type SkuVariantsAvailableVariationsArgs = {
@@ -1163,6 +1168,35 @@ export type ProductDetailsFragment_ProductFragment = {
       activeVariations: any | null
       slugsMap: any | null
       availableVariations: any | null
+      allVariantProducts: Array<{
+        name: string
+        image: Array<{ url: string; alternateName: string }>
+        offers: {
+          highPrice: number
+          lowPrice: number
+          lowPriceWithTaxes: number
+          offerCount: number
+          priceCurrency: string
+          offers: Array<{
+            listPrice: number
+            listPriceWithTaxes: number
+            sellingPrice: number
+            priceCurrency: string
+            price: number
+            priceWithTaxes: number
+            priceValidUntil: string
+            itemCondition: string
+            availability: string
+            quantity: number
+          }>
+        }
+        additionalProperty: Array<{
+          propertyID: string
+          value: any
+          name: string
+          valueReference: any
+        }>
+      }> | null
     } | null
   }
   image: Array<{ url: string; alternateName: string }>
@@ -1181,8 +1215,8 @@ export type ProductDetailsFragment_ProductFragment = {
   }
   additionalProperty: Array<{
     propertyID: string
-    name: string
     value: any
+    name: string
     valueReference: any
   }>
 }
@@ -1271,12 +1305,41 @@ export type ServerProductQueryQuery = {
         activeVariations: any | null
         slugsMap: any | null
         availableVariations: any | null
+        allVariantProducts: Array<{
+          name: string
+          image: Array<{ url: string; alternateName: string }>
+          offers: {
+            highPrice: number
+            lowPrice: number
+            lowPriceWithTaxes: number
+            offerCount: number
+            priceCurrency: string
+            offers: Array<{
+              listPrice: number
+              listPriceWithTaxes: number
+              sellingPrice: number
+              priceCurrency: string
+              price: number
+              priceWithTaxes: number
+              priceValidUntil: string
+              itemCondition: string
+              availability: string
+              quantity: number
+            }>
+          }
+          additionalProperty: Array<{
+            propertyID: string
+            value: any
+            name: string
+            valueReference: any
+          }>
+        }> | null
       } | null
     }
     additionalProperty: Array<{
       propertyID: string
-      name: string
       value: any
+      name: string
       valueReference: any
     }>
   }
@@ -1429,8 +1492,8 @@ export type ClientManyProductsQueryQuery = {
           }
           additionalProperty: Array<{
             propertyID: string
-            name: string
             value: any
+            name: string
             valueReference: any
           }>
         }
@@ -1499,6 +1562,35 @@ export type ClientProductQueryQuery = {
         activeVariations: any | null
         slugsMap: any | null
         availableVariations: any | null
+        allVariantProducts: Array<{
+          name: string
+          image: Array<{ url: string; alternateName: string }>
+          offers: {
+            highPrice: number
+            lowPrice: number
+            lowPriceWithTaxes: number
+            offerCount: number
+            priceCurrency: string
+            offers: Array<{
+              listPrice: number
+              listPriceWithTaxes: number
+              sellingPrice: number
+              priceCurrency: string
+              price: number
+              priceWithTaxes: number
+              priceValidUntil: string
+              itemCondition: string
+              availability: string
+              quantity: number
+            }>
+          }
+          additionalProperty: Array<{
+            propertyID: string
+            value: any
+            name: string
+            valueReference: any
+          }>
+        }> | null
       } | null
     }
     image: Array<{ url: string; alternateName: string }>
@@ -1517,8 +1609,8 @@ export type ClientProductQueryQuery = {
     }
     additionalProperty: Array<{
       propertyID: string
-      name: string
       value: any
+      name: string
       valueReference: any
     }>
   }
@@ -1556,8 +1648,8 @@ export type ClientSearchSuggestionsQueryQuery = {
         }
         additionalProperty: Array<{
           propertyID: string
-          name: string
           value: any
+          name: string
           valueReference: any
         }>
       }>
@@ -1775,6 +1867,38 @@ export const ProductDetailsFragment_ProductFragmentDoc =
       activeVariations
       slugsMap
       availableVariations
+      allVariantProducts {
+        name
+        image {
+          url
+          alternateName
+        }
+        offers {
+          highPrice
+          lowPrice
+          lowPriceWithTaxes
+          offerCount
+          priceCurrency
+          offers {
+            listPrice
+            listPriceWithTaxes
+            sellingPrice
+            priceCurrency
+            price
+            priceWithTaxes
+            priceValidUntil
+            itemCondition
+            availability
+            quantity
+          }
+        }
+        additionalProperty {
+          propertyID
+          value
+          name
+          valueReference
+        }
+      }
     }
   }
   image {
@@ -2024,7 +2148,7 @@ export const ServerCollectionPageQueryDocument = {
 export const ServerProductQueryDocument = {
   __meta__: {
     operationName: 'ServerProductQuery',
-    operationHash: '46103bee661405bde706d72126fdbf9b0a0c9e6e',
+    operationHash: 'a04aaafc9156ec3f72505d027f02521da814b3c5',
   },
 } as unknown as TypedDocumentString<
   ServerProductQueryQuery,
@@ -2069,7 +2193,7 @@ export const ClientProductGalleryQueryDocument = {
 export const ClientProductQueryDocument = {
   __meta__: {
     operationName: 'ClientProductQuery',
-    operationHash: '7d121ef8d4dc99174e64e4429a9b977b8bbebed8',
+    operationHash: 'b964c0e2a52f513b408f49aa445c9c541b1a22a4',
   },
 } as unknown as TypedDocumentString<
   ClientProductQueryQuery,
