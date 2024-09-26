@@ -15,6 +15,7 @@
   --fs-sku-matrix-sidebar-text-weight-medium: var(--fs-text-weight-medium);
   --fs-sku-matrix-sidebar-text-weight-semibold: var(--fs-text-weight-semibold);
 
+  --fs-sku-matrix-sidebar-spacing-2: var(--fs-spacing-2);
   --fs-sku-matrix-sidebar-spacing-3: var(--fs-spacing-3);
   --fs-sku-matrix-sidebar-spacing-4: var(--fs-spacing-4);
   --fs-sku-matrix-sidebar-spacing-8: var(--fs-spacing-8);
@@ -45,6 +46,11 @@
   &[data-fs-slide-over] {
     background-color: var(--fs-sku-matrix-sidebar-bkg-color);
 
+    [data-fs-slide-over-header] {
+      padding: var(--fs-sku-matrix-sidebar-spacing-8);
+      padding-bottom: 0;
+    }
+
     &[data-fs-slide-over-size='partial'] {
       width: var(--fs-sku-matrix-slide-over-partial-width-mobile);
 
@@ -61,14 +67,15 @@
   }
 
   [data-fs-table] {
-    // FIXME - Criar variável?
-    color: #5c5c5c;
+    color: var(--fs-color-neutral-6);
 
     [data-fs-table-cell] {
-      padding-right: 0;
-
       &:first-child {
         padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
       }
     }
   }
@@ -87,8 +94,7 @@
 
   [data-fs-table-cell]:first-child,
   [data-fs-sku-matrix-sidebar-table-price] {
-    // FIXME - Criar variável?
-    color: #1f1f1f;
+    color: var(--fs-color-text);
   }
 
   [data-fs-sku-matrix-sidebar-table-price] {
@@ -99,6 +105,19 @@
 
   [data-fs-sku-matrix-sidebar-table-cell-quantity-selector] {
     width: 1%;
+  }
+
+  [data-fs-sku-matrix-sidebar-cell-image] {
+    display: flex;
+    align-items: center;
+    gap: var(--fs-sku-matrix-sidebar-spacing-2);
+
+    > div {
+      img {
+        object-fit: cover;
+        object-position: center;
+      }
+    }
   }
 
   [data-fs-quantity-selector] {
@@ -121,8 +140,7 @@
 
     padding: var(--fs-sku-matrix-sidebar-spacing-4)
       var(--fs-sku-matrix-sidebar-spacing-8);
-    // FIXME - Criar token?
-    border-top: 1px solid #ebebeb;
+    border-top: 1px solid --fs-color-neutral-2;
     width: 100%;
 
     > div {
@@ -132,8 +150,7 @@
 
       > p {
         font-weight: var(--fs-sku-matrix-sidebar-text-weight-semibold);
-        // FIXME - Criar token?
-        color: #707070;
+        color: var(--fs-color-neutral-5);
       }
     }
   }
