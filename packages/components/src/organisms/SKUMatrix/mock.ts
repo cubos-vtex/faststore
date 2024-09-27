@@ -1,91 +1,83 @@
-export const tableColumns: string[] = [
-  'Part Number',
-  'Storage',
-  'Color',
-  'Availability',
-  'Price (Tax included)',
-  '',
-  'Quantity',
-]
-
-export const mockTableData: {
-  partNumber: string
+export type CartItemType = {
+  name: string
   storage: string
   color: string
-  availability: 'available' | 'out of stock'
+  inventory: 'available' | 'out of stock'
   price: number
-  quantity: number
-}[] = [
+  // quantity: number
+}
+
+export const mockTableData: CartItemType[] = [
   {
-    partNumber: 'SGS23U-256GRN-EU',
+    name: 'SGS23U-256GRN-EU',
     storage: '256GB | 8GB',
     color: 'Green',
-    availability: 'available',
+    inventory: 'available',
     price: 1249.9,
-    quantity: 0,
+    // quantity: 0,
   },
   {
-    partNumber: 'SGS23U-256BLK-EU',
+    name: 'SGS23U-256BLK-EU',
     storage: '256GB | 8GB',
     color: 'Lavender',
-    availability: 'available',
+    inventory: 'available',
     price: 1249.9,
-    quantity: 0,
+    // quantity: 0,
   },
   {
-    partNumber: 'SGS23U-256LVD-EU',
+    name: 'SGS23U-256LVD-EU',
     storage: '512GB | 8GB',
     color: 'Phantom Black',
-    availability: 'out of stock',
+    inventory: 'out of stock',
     price: 1249.9,
-    quantity: 0,
+    // quantity: 0,
   },
   {
-    partNumber: 'SGS23U-128LVD-EU',
+    name: 'SGS23U-128LVD-EU',
     storage: '128GB | 4GB',
     color: 'Phantom Black',
-    availability: 'out of stock',
+    inventory: 'out of stock',
     price: 989.9,
-    quantity: 0,
+    // quantity: 0,
   },
   {
-    partNumber: 'SGS24U-128LVD-EU',
+    name: 'SGS24U-128LVD-EU',
     storage: '128GB | 6GB',
     color: 'Black',
-    availability: 'available',
+    inventory: 'available',
     price: 989.9,
-    quantity: 0,
+    // quantity: 0,
   },
   {
-    partNumber: 'SGS25U-128LVD-EU',
+    name: 'SGS25U-128LVD-EU',
     storage: '128GB | 6GB',
     color: 'Green',
-    availability: 'available',
+    inventory: 'available',
     price: 989.9,
-    quantity: 0,
+    // quantity: 0,
   },
   {
-    partNumber: 'SGS22U-512LVD-EU',
+    name: 'SGS22U-512LVD-EU',
     storage: '512GB | 6GB',
     color: 'Gray',
-    availability: 'available',
+    inventory: 'available',
     price: 989.9,
-    quantity: 0,
+    // quantity: 0,
   },
   {
-    partNumber: 'SGS27U-512LVD-EU',
+    name: 'SGS27U-512LVD-EU',
     storage: '512GB | 6GB',
     color: 'White',
-    availability: 'out of stock',
+    inventory: 'out of stock',
     price: 989.9,
-    quantity: 0,
+    // quantity: 0,
   },
   {
-    partNumber: 'SGS18U-256LVD-EU',
+    name: 'SGS18U-256LVD-EU',
     storage: '256GB | 8GB',
     color: 'White',
-    availability: 'available',
+    inventory: 'available',
     price: 1089.9,
-    quantity: 0,
+    // quantity: 0,
   },
 ]

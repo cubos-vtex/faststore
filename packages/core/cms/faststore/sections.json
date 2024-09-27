@@ -1635,15 +1635,47 @@
             },
             "columns": {
               "title": "Columns",
-              "type": "array",
-              "items": {
-                "title": "Column",
-                "type": "object",
-                "properties": {
-                  "label": {
-                    "title": "Column name",
-                    "type": "string"
+              "type": "object",
+              "properties": {
+                "name": {
+                  "title": "Column name",
+                  "type": "string",
+                  "default": "Name"
+                },
+                "additionalColumns": {
+                  "title": "Additional columns",
+                  "type": "array",
+                  "items": {
+                    "title": "Column",
+                    "type": "object",
+                    "required": ["label", "value"],
+                    "minItems": 5,
+                    "properties": {
+                      "label": {
+                        "title": "Label",
+                        "type": "string"
+                      },
+                      "value": {
+                        "title": "Value",
+                        "type": "string"
+                      }
+                    }
                   }
+                },
+                "availibility": {
+                  "title": "Column availibility",
+                  "type": "string",
+                  "default": "Availibility"
+                },
+                "price": {
+                  "title": "Column price",
+                  "type": "string",
+                  "default": "Price"
+                },
+                "quantitySelector": {
+                  "title": "Column quantity",
+                  "type": "string",
+                  "default": "Quantity"
                 }
               }
             }

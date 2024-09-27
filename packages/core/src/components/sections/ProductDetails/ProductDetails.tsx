@@ -59,7 +59,13 @@ export interface ProductDetailsProps {
   skuMatrix: {
     shouldDisplaySKUMatrix?: boolean
     triggerButtonLabel: string
-    columns: Array<{ label: string }>
+    columns: {
+      name: string
+      additionalColumns?: Array<{ label: string; value: string }>
+      availibility: string
+      price: number
+      quantitySelector: number
+    }
   }
 }
 
@@ -83,6 +89,7 @@ function ProductDetails({
   skuMatrix: {
     triggerButtonLabel: skuMatrixTriggerLabel,
     shouldDisplaySKUMatrix,
+    columns: skuMatrixColumns,
   },
   notAvailableButton: { title: notAvailableButtonTitle },
   quantitySelector,
@@ -117,7 +124,11 @@ function ProductDetails({
     brand,
     isVariantOf,
     description,
-    isVariantOf: { name, productGroupID: productId },
+    isVariantOf: {
+      name,
+      productGroupID: productId,
+      skuVariants: { allVariantProducts },
+    },
     image: productImages,
     offers: {
       offers: [{ availability, price, listPrice, listPriceWithTaxes, seller }],
@@ -234,6 +245,10 @@ function ProductDetails({
                       {skuMatrixTriggerLabel}
                     </SKUMatrixTrigger.Component>
                     <SKUMatrixSidebar.Component
+                      title={isVariantOf.name}
+                      formatter={useFormattedPrice}
+                      allVariantProducts={allVariantProducts}
+                      columns={skuMatrixColumns}
                       overlayProps={{ className: styles.section }}
                     />
                   </SKUMatrix.Component>

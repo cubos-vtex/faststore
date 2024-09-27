@@ -12,8 +12,41 @@ import Price, { PriceFormatter } from '../../atoms/Price'
 import { SlideOverDirection, SlideOverWidthSize } from '../SlideOver'
 import { useFadeEffect } from '../../hooks'
 import { Badge, Button, OverlayProps, QuantitySelector } from '../..'
-import { mockTableData, tableColumns } from './mock'
 import { useSKUMatrix } from './SKUMatrix'
+import Image from 'next/image'
+
+type AllVariantProducts = {
+  name: string
+  image: Array<{
+    url: string
+    alternateName: string
+  }>
+  offers: {
+    highPrice: number
+    lowPrice: number
+    lowPriceWithTaxes: number
+    offerCount: number
+    priceCurrency: string
+    offers: Array<{
+      listPrice: number
+      listPriceWithTaxes: number
+      sellingPrice: number
+      priceCurrency: string
+      price: number
+      priceWithTaxes: number
+      priceValidUntil: string
+      itemCondition: string
+      availability: string
+      quantity: number
+    }>
+  }
+  additionalProperty: Array<{
+    propertyID: string
+    value: any
+    name: string
+    valueReference: any
+  }>
+}
 
 export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
   /**
@@ -50,9 +83,19 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
    */
   overlayProps?: OverlayProps
   /**
-   * Aditional columns.
+   * Columns.
    */
-  columns?: Array<{ label: string }>
+  columns: {
+    name: string
+    additionalColumns?: Array<{ label: string; value: string }>
+    availibility: string
+    price: number
+    quantitySelector: number
+  }
+  /**
+   * All Variant Products.
+   */
+  allVariantProducts: AllVariantProducts[]
   /**
    * Formatter function that transforms the raw price value and render the result.
    */
@@ -66,17 +109,42 @@ function SKUMatrixSidebar({
   size = 'partial',
   children,
   columns,
+  allVariantProducts,
   formatter,
   ...otherProps
 }: SKUMatrixSidebarProps) {
   const { fade } = useFadeEffect()
   const { open, setOpen } = useSKUMatrix()
 
-  const [cartItems, setCartItems] = useState(mockTableData)
+  const products = useMemo(
+    () =>
+      allVariantProducts.map((item) => {
+        const formatedAditionalProperties = item.additionalProperty.reduce(
+          (acc, prop) => ({
+            ...acc,
+            [prop.name.toLowerCase()]: prop.value,
+          }),
+          {}
+        )
 
-  function heandleQuantityChange(partNumber: string, value: number) {
+        return {
+          name: item.name,
+          image: { url: item.image[0].url, alt: item.image[0].alternateName },
+          inventory: item.offers.offers[0].quantity,
+          price: item.offers.offers[0].price,
+          ...formatedAditionalProperties,
+        } as { [key: string]: any }
+      }),
+    [allVariantProducts]
+  )
+
+  const [cartItems, setCartItems] = useState(
+    products.map<{ [key: string]: any }>((item) => ({ ...item, quantity: 0 }))
+  )
+
+  function heandleQuantityChange(name: string, value: number) {
     setCartItems((prev) => {
-      const findSKU = prev.find((item) => item.partNumber === partNumber)
+      const findSKU = prev.find((item) => item.name === name)
 
       if (findSKU) {
         findSKU.quantity = value
@@ -119,43 +187,69 @@ function SKUMatrixSidebar({
       <Table variant="bordered">
         <TableHead>
           <TableRow>
-            {tableColumns.map((columnName) => (
-              <TableCell
-                key={columnName}
-                align={columnName.includes('Price') ? 'right' : 'left'}
-                variant="header"
-                scope="col"
-              >
-                {columnName}
+            <TableCell align="left" variant="header" scope="col">
+              {columns.name}
+            </TableCell>
+
+            {columns.additionalColumns?.map(({ label, value }) => (
+              <TableCell key={value} align="left" variant="header" scope="col">
+                {label}
               </TableCell>
             ))}
+
+            <TableCell align="left" variant="header" scope="col">
+              {columns.availibility}
+            </TableCell>
+
+            <TableCell align="right" variant="header" scope="col">
+              {columns.price}
+            </TableCell>
+
+            <TableCell align="left" variant="header" scope="col">
+              {columns.quantitySelector}
+            </TableCell>
           </TableRow>
         </TableHead>
+
         <TableBody>
-          {cartItems.map((item) => (
-            <TableRow key={item.partNumber}>
-              <TableCell align="left">{item.partNumber}</TableCell>
-              <TableCell align="left">{item.storage}</TableCell>
-              <TableCell align="left">{item.color}</TableCell>
+          {cartItems.map((skuVariant) => (
+            <TableRow key={skuVariant.name}>
+              <TableCell data-fs-sku-matrix-sidebar-cell-image align="left">
+                <div>
+                  <Image
+                    src={skuVariant.image.url}
+                    alt={skuVariant.image.alt}
+                    width={48}
+                    height={48}
+                  />
+                </div>
+                {skuVariant.name}
+              </TableCell>
+
+              {columns.additionalColumns?.map(({ value }) => (
+                <TableCell key={`${skuVariant.name}-${value}`} align="left">
+                  {skuVariant[value]}
+                </TableCell>
+              ))}
+
               <TableCell align="left">
                 <Badge
-                  variant={
-                    item.availability === 'available' ? 'success' : 'warning'
-                  }
+                  variant={skuVariant.inventory >= 1 ? 'success' : 'warning'}
                 >
-                  {item.availability}
+                  {skuVariant.inventory >= 1 ? 'Available' : 'Out of stock'}
                 </Badge>
               </TableCell>
-              <TableCell align="left">
+
+              <TableCell align="right">
                 <div data-fs-sku-matrix-sidebar-table-price>
                   <Price
-                    value={item.price}
+                    value={skuVariant.price}
                     variant="spot"
                     formatter={formatter}
                   />
                 </div>
               </TableCell>
-              <TableCell />
+
               <TableCell
                 align="right"
                 data-fs-sku-matrix-sidebar-table-cell-quantity-selector
@@ -163,10 +257,9 @@ function SKUMatrixSidebar({
                 <div data-fs-sku-matrix-sidebar-table-action>
                   <QuantitySelector
                     min={0}
-                    disabled={item.availability !== 'available'}
-                    initial={item.quantity}
+                    disabled={!skuVariant.inventory}
                     onChange={(value) =>
-                      heandleQuantityChange(item.partNumber, value)
+                      heandleQuantityChange(skuVariant.name, value)
                     }
                   />
                 </div>

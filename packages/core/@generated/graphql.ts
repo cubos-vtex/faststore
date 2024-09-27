@@ -576,6 +576,7 @@ export type ShippingSla = {
 export type SkuVariants = {
   /** SKU property values for the current SKU. */
   activeVariations: Maybe<Scalars['ActiveVariations']['output']>
+  /** All available options for each SKU variant property, indexed by their name. */
   allVariantProducts: Maybe<Array<StoreProduct>>
   /** All available options for each SKU variant property, indexed by their name. */
   allVariantsByName: Maybe<Scalars['VariantsByName']['output']>
@@ -596,10 +597,6 @@ export type SkuVariants = {
    * considered the dominant one.
    */
   slugsMap: Maybe<Scalars['SlugsMap']['output']>
-}
-
-export type SkuVariantsAllVariantProductsArgs = {
-  productID: InputMaybe<Scalars['String']['input']>
 }
 
 export type SkuVariantsAvailableVariationsArgs = {
