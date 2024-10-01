@@ -1626,7 +1626,7 @@
             "shouldDisplaySKUMatrix": {
               "title": "Should display SKUMatrix?",
               "type": "boolean",
-              "default": "false"
+              "default": false
             },
             "triggerButtonLabel": {
               "title": "SKU Matrix Trigger label to be displayed",
