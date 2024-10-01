@@ -56,7 +56,7 @@ export interface ProductDetailsProps {
     usePriceWithTaxes?: boolean
     taxesLabel?: string
   }
-  skuMatrix: {
+  skuMatrix?: {
     shouldDisplaySKUMatrix?: boolean
     triggerButtonLabel: string
     columns: {
@@ -86,11 +86,7 @@ function ProductDetails({
     initiallyExpanded: productDescriptionInitiallyExpanded,
     displayDescription: shouldDisplayProductDescription,
   },
-  skuMatrix: {
-    triggerButtonLabel: skuMatrixTriggerLabel,
-    shouldDisplaySKUMatrix,
-    columns: skuMatrixColumns,
-  },
+  skuMatrix,
   notAvailableButton: { title: notAvailableButtonTitle },
   quantitySelector,
   taxesConfiguration,
@@ -100,12 +96,12 @@ function ProductDetails({
     ProductTitle,
     SKUMatrix,
     SKUMatrixTrigger,
-    SKUMatrixSidebar,
     __experimentalImageGallery: ImageGallery,
     __experimentalShippingSimulation: ShippingSimulation,
     __experimentalNotAvailableButton: NotAvailableButton,
     __experimentalProductDescription: ProductDescription,
     __experimentalProductDetailsSettings: ProductDetailsSettings,
+    __experimentalSKUMatrixSidebar: SKUMatrixSidebar,
   } = useOverrideComponents<'ProductDetails'>()
   const { currency } = useSession()
   const context = usePDP()
@@ -175,6 +171,42 @@ function ProductDetails({
     [availability]
   )
 
+  // FIXME - Inventory property
+  const variantsProduct: {
+    name: string
+    image: { url: string; alt: string }
+    availability: 'outOfStock' | 'available'
+    inventory: number
+    price: number
+    [key: string]: any
+  }[] = useMemo(
+    () =>
+      allVariantProducts.map((item) => {
+        const formatedAditionalProperties = item.additionalProperty.reduce<{
+          [key: string]: any
+        }>(
+          (acc, prop) => ({
+            ...acc,
+            [prop.name.toLowerCase()]: prop.value,
+          }),
+          {}
+        )
+
+        const outOfStock =
+          item.offers.offers[0].availability === 'https://schema.org/OutOfStock'
+
+        return {
+          name: item.name,
+          image: { url: item.image[0].url, alt: item.image[0].alternateName },
+          inventory: item.offers.offers[0].quantity,
+          availability: outOfStock ? 'outOfStock' : 'available',
+          price: item.offers.offers[0].price,
+          ...formatedAditionalProperties,
+        }
+      }),
+    [allVariantProducts]
+  )
+
   return (
     <Section className={`${styles.section} section-product-details`}>
       <section data-fs-product-details>
@@ -236,19 +268,19 @@ function ProductDetails({
                 taxesConfiguration={taxesConfiguration}
               />
 
-              {shouldDisplaySKUMatrix && (
+              {skuMatrix?.shouldDisplaySKUMatrix && (
                 <>
                   <div data-fs-product-details-settings-separator>Or</div>
 
                   <SKUMatrix.Component>
                     <SKUMatrixTrigger.Component disabled={isValidating}>
-                      {skuMatrixTriggerLabel}
+                      {skuMatrix.triggerButtonLabel}
                     </SKUMatrixTrigger.Component>
                     <SKUMatrixSidebar.Component
                       title={isVariantOf.name}
                       formatter={useFormattedPrice}
-                      allVariantProducts={allVariantProducts}
-                      columns={skuMatrixColumns}
+                      columns={skuMatrix.columns}
+                      allVariantProducts={variantsProduct}
                       overlayProps={{ className: styles.section }}
                     />
                   </SKUMatrix.Component>

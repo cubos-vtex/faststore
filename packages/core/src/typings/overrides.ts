@@ -286,6 +286,7 @@ export type SectionsOverrides = {
       __experimentalShippingSimulation: ComponentOverrideDefinition<any, any>
       __experimentalNotAvailableButton: ComponentOverrideDefinition<any, any>
       __experimentalProductDescription: ComponentOverrideDefinition<any, any>
+      __experimentalSKUMatrixSidebar: ComponentOverrideDefinition<any, any>
       __experimentalProductDetailsSettings: ComponentOverrideDefinition<
         any,
         any

@@ -18,7 +18,8 @@ import LocalImageGallery from 'src/components/ui/ImageGallery'
 import LocalShippingSimulation from 'src/components/ui/ShippingSimulation/ShippingSimulation'
 import { Image } from 'src/components/ui/Image'
 import LocalNotAvailableButton from 'src/components/product/NotAvailableButton'
-import LocalProductDescription from 'src/components/ui/ProductDescription'
+import LocalSKUMatrixSidebar from 'src/components/ui/SKUMatrix/SKUMatrixSidebar'
+import LocalProductDescription from 'src/components/ui/ProductDescription/ProductDescription'
 import { ProductDetailsSettings as LocalProductDetailsSettings } from 'src/components/ui/ProductDetails'
 
 export const ProductDetailsDefaultComponents = {
@@ -38,6 +39,7 @@ export const ProductDetailsDefaultComponents = {
   __experimentalImageGalleryImage: Image,
   __experimentalImageGallery: LocalImageGallery,
   __experimentalShippingSimulation: LocalShippingSimulation,
+  __experimentalSKUMatrixSidebar: LocalSKUMatrixSidebar,
   __experimentalNotAvailableButton: LocalNotAvailableButton,
   __experimentalProductDescription: LocalProductDescription,
   __experimentalProductDetailsSettings: LocalProductDetailsSettings,
