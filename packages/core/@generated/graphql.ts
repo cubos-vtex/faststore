@@ -1166,6 +1166,7 @@ export type ProductDetailsFragment_ProductFragment = {
       slugsMap: any | null
       availableVariations: any | null
       allVariantProducts: Array<{
+        sku: string
         name: string
         image: Array<{ url: string; alternateName: string }>
         offers: {
@@ -1303,6 +1304,7 @@ export type ServerProductQueryQuery = {
         slugsMap: any | null
         availableVariations: any | null
         allVariantProducts: Array<{
+          sku: string
           name: string
           image: Array<{ url: string; alternateName: string }>
           offers: {
@@ -1560,6 +1562,7 @@ export type ClientProductQueryQuery = {
         slugsMap: any | null
         availableVariations: any | null
         allVariantProducts: Array<{
+          sku: string
           name: string
           image: Array<{ url: string; alternateName: string }>
           offers: {
@@ -1865,6 +1868,7 @@ export const ProductDetailsFragment_ProductFragmentDoc =
       slugsMap
       availableVariations
       allVariantProducts {
+        sku
         name
         image {
           url
@@ -2145,7 +2149,7 @@ export const ServerCollectionPageQueryDocument = {
 export const ServerProductQueryDocument = {
   __meta__: {
     operationName: 'ServerProductQuery',
-    operationHash: 'a04aaafc9156ec3f72505d027f02521da814b3c5',
+    operationHash: 'b1bc611b6e10a659dd27fc8c2a54d4386a7d07de',
   },
 } as unknown as TypedDocumentString<
   ServerProductQueryQuery,
@@ -2190,7 +2194,7 @@ export const ClientProductGalleryQueryDocument = {
 export const ClientProductQueryDocument = {
   __meta__: {
     operationName: 'ClientProductQuery',
-    operationHash: 'b964c0e2a52f513b408f49aa445c9c541b1a22a4',
+    operationHash: 'e5deaec64cbfb96af9a8dd0de3c1b3b987c4f9fd',
   },
 } as unknown as TypedDocumentString<
   ClientProductQueryQuery,

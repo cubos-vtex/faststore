@@ -171,42 +171,6 @@ function ProductDetails({
     [availability]
   )
 
-  // FIXME - Inventory property
-  const variantsProduct: {
-    name: string
-    image: { url: string; alt: string }
-    availability: 'outOfStock' | 'available'
-    inventory: number
-    price: number
-    [key: string]: any
-  }[] = useMemo(
-    () =>
-      allVariantProducts.map((item) => {
-        const formatedAditionalProperties = item.additionalProperty.reduce<{
-          [key: string]: any
-        }>(
-          (acc, prop) => ({
-            ...acc,
-            [prop.name.toLowerCase()]: prop.value,
-          }),
-          {}
-        )
-
-        const outOfStock =
-          item.offers.offers[0].availability === 'https://schema.org/OutOfStock'
-
-        return {
-          name: item.name,
-          image: { url: item.image[0].url, alt: item.image[0].alternateName },
-          inventory: item.offers.offers[0].quantity,
-          availability: outOfStock ? 'outOfStock' : 'available',
-          price: item.offers.offers[0].price,
-          ...formatedAditionalProperties,
-        }
-      }),
-    [allVariantProducts]
-  )
-
   return (
     <Section className={`${styles.section} section-product-details`}>
       <section data-fs-product-details>
@@ -277,10 +241,8 @@ function ProductDetails({
                       {skuMatrix.triggerButtonLabel}
                     </SKUMatrixTrigger.Component>
                     <SKUMatrixSidebar.Component
-                      title={isVariantOf.name}
                       formatter={useFormattedPrice}
                       columns={skuMatrix.columns}
-                      allVariantProducts={variantsProduct}
                       overlayProps={{ className: styles.section }}
                     />
                   </SKUMatrix.Component>
@@ -355,6 +317,7 @@ export const fragment = gql(`
         slugsMap
         availableVariations
         allVariantProducts {
+					sku
           name
           image {
             url

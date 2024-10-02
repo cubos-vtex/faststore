@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react'
-import type { ReactNode, HTMLAttributes } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import type { HTMLAttributes } from 'react'
 import SlideOver, { SlideOverHeader } from '../SlideOver'
 import {
   Table,
@@ -14,39 +14,6 @@ import { useFadeEffect } from '../../hooks'
 import { Badge, Button, OverlayProps, QuantitySelector } from '../..'
 import { useSKUMatrix } from './SKUMatrix'
 import Image from 'next/image'
-
-// type AllVariantProducts = {
-//   name: string
-//   image: Array<{
-//     url: string
-//     alternateName: string
-//   }>
-//   offers: {
-//     highPrice: number
-//     lowPrice: number
-//     lowPriceWithTaxes: number
-//     offerCount: number
-//     priceCurrency: string
-//     offers: Array<{
-//       listPrice: number
-//       listPriceWithTaxes: number
-//       sellingPrice: number
-//       priceCurrency: string
-//       price: number
-//       priceWithTaxes: number
-//       priceValidUntil: string
-//       itemCondition: string
-//       availability: string
-//       quantity: number
-//     }>
-//   }
-//   additionalProperty: Array<{
-//     propertyID: string
-//     value: any
-//     name: string
-//     valueReference: any
-//   }>
-// }
 
 export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
   /**
@@ -67,18 +34,6 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
    */
   size?: SlideOverWidthSize
   /**
-   * Total of selected item in the Matrix.
-   */
-  // totalitems: number
-  /**
-   * A React component that will be rendered as an icon on the Alert component.
-   */
-  alertIcon?: ReactNode
-  /**
-   * The content for Alert component.
-   */
-  alertText?: string
-  /**
    * Props forwarded to the `Overlay` component.
    */
   overlayProps?: OverlayProps
@@ -96,19 +51,17 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
    * SKUVariants.
    */
   allVariantProducts: {
+    id: string
     [key: string]: any
     name: string
     image: { url: string; alt: string }
     availability: string
     inventory: number
     price: number
+    quantity: number
   }[]
   /**
-   * All Variant Products.
-   */
-  // allVariantProducts: AllVariantProducts[]
-  /**
-   * All Variant Products.
+   * Buy props.
    */
   buyProps: {
     'data-testid': string
@@ -120,6 +73,10 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
    * Formatter function that transforms the raw price value and render the result.
    */
   formatter?: PriceFormatter
+
+  // initialQuantitySelectorValue: {
+  //   [id: string]: number
+  // }
 }
 
 function SKUMatrixSidebar({
@@ -131,24 +88,23 @@ function SKUMatrixSidebar({
   columns,
   allVariantProducts,
   buyProps,
+  // initialQuantitySelectorValue,
   formatter,
   ...otherProps
 }: SKUMatrixSidebarProps) {
   const { fade } = useFadeEffect()
   const { open, setOpen } = useSKUMatrix()
-
   const [cartItems, setCartItems] = useState<
     SKUMatrixSidebarProps['allVariantProducts']
-  >(
-    allVariantProducts.map((item) => ({
-      ...item,
-      quantity: 0,
-    }))
-  )
+  >([])
 
-  function heandleQuantityChange(name: string, value: number) {
+  useEffect(() => {
+    setCartItems(allVariantProducts)
+  }, [allVariantProducts])
+
+  function heandleQuantityChange(id: string, value: number) {
     setCartItems((prev) => {
-      const findSKU = prev.find((item) => item.name === name)
+      const findSKU = prev.find((item) => item.id === id)
 
       if (findSKU) {
         findSKU.quantity = value
@@ -217,7 +173,7 @@ function SKUMatrixSidebar({
 
         <TableBody>
           {cartItems.map((variantProduct) => (
-            <TableRow key={variantProduct.name}>
+            <TableRow key={`${variantProduct.name}-${variantProduct.id}`}>
               <TableCell data-fs-sku-matrix-sidebar-cell-image align="left">
                 <div>
                   <Image
@@ -231,7 +187,10 @@ function SKUMatrixSidebar({
               </TableCell>
 
               {columns.additionalColumns?.map(({ value }) => (
-                <TableCell key={`${variantProduct.name}-${value}`} align="left">
+                <TableCell
+                  key={`${variantProduct.name}-${variantProduct.id}-${value}`}
+                  align="left"
+                >
                   {variantProduct[value]}
                 </TableCell>
               ))}
@@ -272,10 +231,10 @@ function SKUMatrixSidebar({
                       !variantProduct.inventory ||
                       variantProduct.availability === ''
                     }
-                    onChange={(value) => {
-                      console.log({ value })
+                    initial={variantProduct.quantity}
+                    onChange={(value) =>
                       heandleQuantityChange(variantProduct.name, value)
-                    }}
+                    }
                   />
                 </div>
               </TableCell>
