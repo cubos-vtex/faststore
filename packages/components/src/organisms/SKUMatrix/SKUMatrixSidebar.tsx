@@ -147,7 +147,6 @@ function SKUMatrixSidebar({
   )
 
   function heandleQuantityChange(name: string, value: number) {
-    console.log({ name, value })
     setCartItems((prev) => {
       const findSKU = prev.find((item) => item.name === name)
 
@@ -233,7 +232,7 @@ function SKUMatrixSidebar({
 
               {columns.additionalColumns?.map(({ value }) => (
                 <TableCell key={`${variantProduct.name}-${value}`} align="left">
-                  {variantProduct['value']}
+                  {variantProduct[value]}
                 </TableCell>
               ))}
 
