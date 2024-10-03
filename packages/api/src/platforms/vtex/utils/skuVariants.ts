@@ -1,5 +1,5 @@
-import { StoreProduct as StoreProductType } from '../../..'
-import type { Product, Item } from '../clients/search/types/ProductSearchResult'
+import { StoreImage, StoreProduct as StoreProductType } from '../../..'
+import type { Product, Item, Seller } from '../clients/search/types/ProductSearchResult'
 
 export type SkuVariants = StoreProductType[]
 
@@ -12,20 +12,14 @@ type FormattedSkuVariant = {
   value: string
 }
 
-type AllVariantProducts = {
+type FormattedAllVariantProducts = {
   name: string;
   productID: string;
-  referenceCode: string;
-  price: number;
-  priceWithTaxes: number;
+  image: StoreImage;
+  availability: string;
+  seller: Seller;
   quantity: number;
-  itemCondition: string;
-  additionalProperties: {
-    name: string;
-    value: string;
-    valueReference: string;
-    propertyID: string;
-  }[];
+  variations: Record<string, string>;
 }
 
 const SKU_IMAGE_LABEL = 'skuvariation'
@@ -259,24 +253,28 @@ export function getFormattedVariations(
 
 export function getFormattedAllVariantProducts(
   items: Item[]
-): AllVariantProducts[] {
+): FormattedAllVariantProducts[] {
   return items.map((item) => {
+    const skuImage = findSkuVariantImage(item.images)
+
+    const variations = item.variations.reduce((acc: Record<string, string>, variation) => {
+      acc[variation.name] = variation.values[0]
+      return acc
+    }, {} as Record<string, string>)
+
+    const seller = item.sellers[0];
+
     return {
       name: item.name,
       productID: item.itemId,
-      referenceCode: item.referenceId?.[0]?.Value ?? '',
-      price: item.sellers[0].commertialOffer.Price,
-      priceWithTaxes: item.sellers[0].commertialOffer.Price + item.sellers[0].commertialOffer.Tax,
-      quantity: item.sellers[0].commertialOffer.AvailableQuantity,
-      itemCondition: "GOOD",
-      additionalProperties: item.variations.map((variation) => {
-        return {
-          name: variation.name,
-          value: variation.values[0],
-          valueReference: variation.values[0],
-          propertyID: variation.name
-        }
-      })
+      image: {
+        url: skuImage.imageUrl,
+        alternateName: skuImage.imageText ?? '',
+      },
+      quantity: seller.commertialOffer.AvailableQuantity,
+      availability: seller.commertialOffer.AvailableQuantity > 0 ? "Available" : "Out of stock",
+      variations,
+      seller,
     }
   })
 }

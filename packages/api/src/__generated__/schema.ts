@@ -63,6 +63,64 @@ export type Scalars = {
   SlugsMap: any;
   /**
    * Example:
+   * [
+   *   {
+   *       "name": "Headphone Cubos - Black",
+   *       "productID": "99988223",
+   *       "image": {
+   *           "url": "https://storeframework.vtexassets.com/arquivos/ids/190950/cubos.png?v=638634849809830000",
+   *           "alternateName": "HeadphoneCubos"
+   *       },
+   *       "quantity": 10000,
+   *       "availability": "Available",
+   *       "variations": {
+   *           "Color": "Black",
+   *           "Size": "42"
+   *       },
+   *       "seller": {
+   *           "sellerId": "1",
+   *           "sellerName": "VTEX",
+   *           "addToCartLink": "",
+   *           "sellerDefault": true,
+   *           "commertialOffer": {
+   *               "DeliverySlaSamplesPerRegion": {},
+   *               "DeliverySlaSamples": [],
+   *               "AvailableQuantity": 10000,
+   *               "discountHighlights": [],
+   *               "Installments": [
+   *                   {
+   *                       "PaymentSystemName": "Visa",
+   *                       "Value": 130,
+   *                       "InterestRate": 0,
+   *                       "TotalValuePlusInterestRate": 130,
+   *                       "NumberOfInstallments": 1,
+   *                       "Name": "Visa à vista",
+   *                       "PaymentSystemGroupName": "creditCardPaymentGroup"
+   *                   },
+   *               ],
+   *               "Price": 130,
+   *               "ListPrice": 130,
+   *               "spotPrice": 130,
+   *               "taxPercentage": 0,
+   *               "PriceWithoutDiscount": 130,
+   *               "Tax": 0,
+   *               "GiftSkuIds": [],
+   *               "BuyTogether": [],
+   *               "ItemMetadataAttachment": [],
+   *               "RewardValue": 0,
+   *               "PriceValidUntil": "2025-10-03T13:29:39Z",
+   *               "GetInfoErrorMessage": null,
+   *               "CacheVersionUsedToCallCheckout": "",
+   *               "teasers": []
+   *           }
+   *       }
+   *   },
+   * ]
+   * ```
+   */
+  VariantProducts: any;
+  /**
+   * Example:
    *
    * ```json
    * {
@@ -588,7 +646,7 @@ export type SkuVariants = {
   /** SKU property values for the current SKU. */
   activeVariations?: Maybe<Scalars['ActiveVariations']>;
   /** All available options for each SKU variant property, indexed by their name. */
-  allVariantProducts?: Maybe<Array<StoreProduct>>;
+  allVariantProducts?: Maybe<Scalars['VariantProducts']>;
   /** All available options for each SKU variant property, indexed by their name. */
   allVariantsByName?: Maybe<Scalars['VariantsByName']>;
   /**
