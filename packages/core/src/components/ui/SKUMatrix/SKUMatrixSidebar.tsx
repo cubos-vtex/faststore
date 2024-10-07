@@ -1,7 +1,9 @@
 import type { SKUMatrixSidebarProps as UISKUMatrixSidebarProps } from '@faststore/ui'
-import { SKUMatrixSidebar as UISKUMatrixSidebar } from '@faststore/ui'
+import {
+  SKUMatrixSidebar as UISKUMatrixSidebar,
+  useSKUMatrix,
+} from '@faststore/ui'
 import { useMemo } from 'react'
-import { useCart } from 'src/sdk/cart'
 import { useBuyButton } from 'src/sdk/cart/useBuyButton'
 import { usePDP } from 'src/sdk/overrides/PageProvider'
 
@@ -11,10 +13,7 @@ function SKUMatrixSidebar(props: SKUMatrixProps) {
   const {
     data: { product },
   } = usePDP()
-
-  const cartItem = useCart().items.reduce<{
-    [id: string]: number
-  }>((acc, item) => ({ ...acc, [item.itemOffered.sku]: item.quantity }), {})
+  const { allVariantProducts: allVariantProductsFromHook } = useSKUMatrix()
 
   const {
     gtin,
@@ -31,17 +30,9 @@ function SKUMatrixSidebar(props: SKUMatrixProps) {
   } = product
 
   // FIXME - Inventory property
-  const variantProducts: {
-    id: string
-    [key: string]: any
-    name: string
-    image: { url: string; alt: string }
-    availability: 'outOfStock' | 'available'
-    inventory: number
-    price: number
-    quantity: number
-  }[] = useMemo(() => {
-    return allVariantProducts.map((item) => {
+
+  const formattedVariantProducts = useMemo(() => {
+    const response = allVariantProducts.map((item) => {
       const formatedAditionalProperties = item.additionalProperty.reduce<{
         [key: string]: any
       }>(
@@ -58,56 +49,58 @@ function SKUMatrixSidebar(props: SKUMatrixProps) {
       return {
         id: item.sku,
         name: item.name,
-        image: { url: item.image[0].url, alt: item.image[0].alternateName },
+        image: {
+          url: item.image[0].url,
+          alternateName: item.image[0].alternateName,
+        },
         inventory: item.offers.offers[0].quantity,
         availability: outOfStock ? 'outOfStock' : 'available',
         price: item.offers.offers[0].price,
-        quantity: cartItem[item.sku] ?? 0,
-        ...formatedAditionalProperties,
+        quantity: 0,
+        specification: formatedAditionalProperties,
+        offers: item.offers,
       }
     })
-  }, [allVariantProducts, cartItem])
+    return response
+  }, [allVariantProducts])
 
-  const buyButtonProps = allVariantProducts.map((item) => {
-    const {
-      offers: {
-        offers: [{ price, priceWithTaxes, listPrice, listPriceWithTaxes }],
-      },
-    } = item
+  const buyButtonProps = allVariantProductsFromHook
+    .filter((item) => item.quantity)
+    .map((item) => {
+      const {
+        offers: {
+          offers: [{ price, priceWithTaxes, listPrice, listPriceWithTaxes }],
+        },
+      } = item
 
-    // FIXME - Rever essa lógica
-    return {
-      id: item.sku,
-      price,
-      priceWithTaxes,
-      listPrice,
-      listPriceWithTaxes,
-      seller,
-      quantity: 1,
-      itemOffered: {
-        sku: item.sku,
-        name: item.name,
-        gtin,
-        image: item.image,
-        brand,
-        // FIXME - Rever
-        isVariantOf: {
-          ...isVariantOf,
-          skuVariants: {
-            ...isVariantOf.skuVariants,
-            activeVariations: {
-              ...item.additionalProperty.reduce(
-                (acc, item) => ({ ...acc, [item.name]: item.value }),
-                {}
-              ),
+      // FIXME - Rever essa lógica
+      return {
+        id: item.id,
+        price,
+        priceWithTaxes,
+        listPrice,
+        listPriceWithTaxes,
+        seller,
+        quantity: item.quantity,
+        itemOffered: {
+          sku: item.id,
+          name: item.name,
+          gtin,
+          image: [item.image],
+          brand,
+          // FIXME - Rever
+          isVariantOf: {
+            ...isVariantOf,
+            skuVariants: {
+              ...isVariantOf.skuVariants,
+              activeVariations: item.specification,
             },
           },
+          additionalProperty,
+          unitMultiplier,
         },
-        additionalProperty,
-        unitMultiplier,
-      },
-    }
-  })
+      }
+    })
 
   const buyProps = useBuyButton(buyButtonProps)
 
@@ -115,8 +108,7 @@ function SKUMatrixSidebar(props: SKUMatrixProps) {
     <UISKUMatrixSidebar
       buyProps={buyProps}
       title={isVariantOf.name}
-      // initialQuantitySelectorValue={defaulCartItemQuantityValue}
-      allVariantProducts={variantProducts}
+      allVariantProducts={formattedVariantProducts}
       {...props}
     />
   )

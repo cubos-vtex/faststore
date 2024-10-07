@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import type { HTMLAttributes } from 'react'
 import SlideOver, { SlideOverHeader } from '../SlideOver'
 import {
@@ -10,9 +10,8 @@ import {
 } from '../../molecules/Table'
 import Price, { PriceFormatter } from '../../atoms/Price'
 import { SlideOverDirection, SlideOverWidthSize } from '../SlideOver'
-import { useFadeEffect } from '../../hooks'
+import { useFadeEffect, useSKUMatrix } from '../../hooks'
 import { Badge, Button, OverlayProps, QuantitySelector } from '../..'
-import { useSKUMatrix } from './SKUMatrix'
 import Image from 'next/image'
 
 export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
@@ -48,20 +47,39 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
     quantitySelector: number
   }
   /**
-   * SKUVariants.
+   * AllVariantProducts.
    */
   allVariantProducts: {
     id: string
-    [key: string]: any
     name: string
-    image: { url: string; alt: string }
+    image: { url: string; alternateName: string }
     availability: string
     inventory: number
     price: number
     quantity: number
+    specification: { [key: string]: any }
+    offers: {
+      highPrice: number
+      lowPrice: number
+      lowPriceWithTaxes: number
+      offerCount: number
+      priceCurrency: string
+      offers: Array<{
+        listPrice: number
+        listPriceWithTaxes: number
+        sellingPrice: number
+        priceCurrency: string
+        price: number
+        priceWithTaxes: number
+        priceValidUntil: string
+        itemCondition: string
+        availability: string
+        quantity: number
+      }>
+    }
   }[]
   /**
-   * Buy props.
+   * Properties related to the 'add to cart' button
    */
   buyProps: {
     'data-testid': string
@@ -73,10 +91,10 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
    * Formatter function that transforms the raw price value and render the result.
    */
   formatter?: PriceFormatter
-
-  // initialQuantitySelectorValue: {
-  //   [id: string]: number
-  // }
+  /**
+   * Function that returns the data reflected from changes.
+   */
+  onChangeItems?(items: SKUMatrixSidebarProps['allVariantProducts']): void
 }
 
 function SKUMatrixSidebar({
@@ -88,41 +106,44 @@ function SKUMatrixSidebar({
   columns,
   allVariantProducts,
   buyProps,
-  // initialQuantitySelectorValue,
+  onChangeItems,
   formatter,
   ...otherProps
 }: SKUMatrixSidebarProps) {
   const { fade } = useFadeEffect()
-  const { open, setOpen } = useSKUMatrix()
-  const [cartItems, setCartItems] = useState<
-    SKUMatrixSidebarProps['allVariantProducts']
-  >([])
+  const {
+    open,
+    setOpen,
+    onChangeAllVariantProducts,
+    allVariantProducts: allVariantProductsFromHook,
+    handleChangeQuantityItem,
+  } = useSKUMatrix()
 
   useEffect(() => {
-    setCartItems(allVariantProducts)
-  }, [allVariantProducts])
-
-  function heandleQuantityChange(id: string, value: number) {
-    setCartItems((prev) => {
-      const findSKU = prev.find((item) => item.id === id)
-
-      if (findSKU) {
-        findSKU.quantity = value
-      }
-
-      return [...prev]
-    })
-  }
+    onChangeAllVariantProducts(allVariantProducts)
+  }, [])
 
   const cartDetails = useMemo(() => {
-    return cartItems.reduce(
+    return allVariantProductsFromHook.reduce(
       (acc, product) => ({
         amount: acc.amount + product.quantity,
         subtotal: acc.subtotal + product.quantity * product.price,
       }),
       { amount: 0, subtotal: 0 }
     )
-  }, [cartItems])
+  }, [allVariantProductsFromHook])
+
+  function resetQuantityItems() {
+    onChangeAllVariantProducts(
+      allVariantProductsFromHook.map((item) => ({ ...item, quantity: 0 }))
+    )
+  }
+
+  function handleQuantitySelectorChange(id: string, value: number) {
+    const response = handleChangeQuantityItem(id, value)
+
+    onChangeItems?.(response)
+  }
 
   return (
     <SlideOver
@@ -136,6 +157,7 @@ function SKUMatrixSidebar({
     >
       <SlideOverHeader
         onClose={() => {
+          resetQuantityItems()
           setOpen(false)
         }}
       >
@@ -172,13 +194,13 @@ function SKUMatrixSidebar({
         </TableHead>
 
         <TableBody>
-          {cartItems.map((variantProduct) => (
+          {allVariantProductsFromHook.map((variantProduct) => (
             <TableRow key={`${variantProduct.name}-${variantProduct.id}`}>
               <TableCell data-fs-sku-matrix-sidebar-cell-image align="left">
                 <div>
                   <Image
                     src={variantProduct.image.url}
-                    alt={variantProduct.image.alt}
+                    alt={variantProduct.image.alternateName}
                     width={48}
                     height={48}
                   />
@@ -191,7 +213,7 @@ function SKUMatrixSidebar({
                   key={`${variantProduct.name}-${variantProduct.id}-${value}`}
                   align="left"
                 >
-                  {variantProduct[value]}
+                  {variantProduct.specification[value]}
                 </TableCell>
               ))}
 
@@ -233,7 +255,7 @@ function SKUMatrixSidebar({
                     }
                     initial={variantProduct.quantity}
                     onChange={(value) =>
-                      heandleQuantityChange(variantProduct.name, value)
+                      handleQuantitySelectorChange(variantProduct.id, value)
                     }
                   />
                 </div>
@@ -246,7 +268,7 @@ function SKUMatrixSidebar({
       <footer data-fs-sku-matrix-sidebar-footer>
         <div>
           <p>
-            {cartDetails.amount} {cartDetails.amount !== 1 ? 'Items' : 'Item'}{' '}
+            {cartDetails.amount} {cartDetails.amount !== 1 ? 'Items' : 'Item'}
           </p>
           <Price
             value={cartDetails.subtotal}
