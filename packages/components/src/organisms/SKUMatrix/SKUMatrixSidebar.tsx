@@ -42,7 +42,10 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
   columns: {
     name: string
     additionalColumns?: Array<{ label: string; value: string }>
-    availibility: 'outOfStock' | 'available'
+    availability: {
+      label: string
+      stockDisplaySettings: 'showStockQuantity' | 'showAvailability'
+    }
     price: number
     quantitySelector: number
   }
@@ -145,6 +148,8 @@ function SKUMatrixSidebar({
     onChangeItems?.(response)
   }
 
+  console.log({ columns })
+
   return (
     <SlideOver
       data-fs-sku-matrix-sidebar
@@ -180,7 +185,7 @@ function SKUMatrixSidebar({
             ))}
 
             <TableCell align="left" variant="header" scope="col">
-              {columns.availibility}
+              {columns.availability.label}
             </TableCell>
 
             <TableCell align="right" variant="header" scope="col">
@@ -218,17 +223,23 @@ function SKUMatrixSidebar({
               ))}
 
               <TableCell align="left">
-                <Badge
-                  variant={
-                    variantProduct.availability === 'outofstock'
-                      ? 'warning'
-                      : 'success'
-                  }
-                >
-                  {variantProduct.availability === 'outofstock'
-                    ? 'Out of stock'
-                    : 'Available'}
-                </Badge>
+                {columns.availability.stockDisplaySettings ===
+                  'showAvailability' && (
+                  <Badge
+                    variant={
+                      variantProduct.availability === 'outofstock'
+                        ? 'warning'
+                        : 'success'
+                    }
+                  >
+                    {variantProduct.availability === 'outofstock'
+                      ? 'Out of stock'
+                      : 'Available'}
+                  </Badge>
+                )}
+
+                {columns.availability.stockDisplaySettings ===
+                  'showStockQuantity' && variantProduct.inventory}
               </TableCell>
 
               <TableCell align="right">

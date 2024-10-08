@@ -62,7 +62,10 @@ export interface ProductDetailsProps {
     columns: {
       name: string
       additionalColumns?: Array<{ label: string; value: string }>
-      availibility: string
+      availability: {
+        label: string
+        stockDisplaySettings: 'showAvailability' | 'showStockQuantity'
+      }
       price: number
       quantitySelector: number
     }
