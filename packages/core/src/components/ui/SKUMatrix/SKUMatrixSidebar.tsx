@@ -1,126 +1,147 @@
 import type { SKUMatrixSidebarProps as UISKUMatrixSidebarProps } from '@faststore/ui'
-import { SKUMatrixSidebar as UISKUMatrixSidebar } from '@faststore/ui'
+import {
+  SKUMatrixSidebar as UISKUMatrixSidebar,
+  useSKUMatrix,
+} from '@faststore/ui'
 import { gql } from '@generated/gql'
-import { useCart } from 'src/sdk/cart'
+import { useMemo } from 'react'
 import { useBuyButton } from 'src/sdk/cart/useBuyButton'
 import { usePDP } from 'src/sdk/overrides/PageProvider'
 import { useAllVariantProducts } from 'src/sdk/product/useAllVariantProducts'
 
 interface SKUMatrixProps extends UISKUMatrixSidebarProps {}
 
+interface teste {
+  sku: string
+  name: string
+  image: Array<{ url: string; alternateName: string }>
+  offers: {
+    highPrice: number
+    lowPrice: number
+    lowPriceWithTaxes: number
+    offerCount: number
+    priceCurrency: string
+    offers: Array<{
+      listPrice: number
+      listPriceWithTaxes: number
+      sellingPrice: number
+      priceCurrency: string
+      price: number
+      priceWithTaxes: number
+      priceValidUntil: string
+      itemCondition: string
+      availability: string
+      quantity: number
+    }>
+  }
+  additionalProperty: Array<{
+    propertyID: string
+    value: any
+    name: string
+    valueReference: any
+  }>
+}
+
 function SKUMatrixSidebar(props: SKUMatrixProps) {
   const {
     data: { product },
   } = usePDP()
 
-  const { data: client, isValidating } = useAllVariantProducts(product.id, {
-    product,
-  })
-
-  const cartItem = useCart().items.reduce<{
-    [id: string]: number
-  }>((acc, item) => ({ ...acc, [item.itemOffered.sku]: item.quantity }), {})
+  const { allVariantProducts: allVariantProductsFromHook, open } =
+    useSKUMatrix()
+  const { data: client, isValidating } = useAllVariantProducts(product.id, open)
 
   const {
     gtin,
     unitMultiplier,
     brand,
-    isVariantOf,
-    isVariantOf: {
-      skuVariants: { allVariantProducts },
-    },
     additionalProperty,
     offers: {
       offers: [{ seller }],
     },
-  } = client.product
-  console.log(allVariantProducts)
-  // FIXME - Inventory property
-  // const variantProducts: {
-  //   id: string
-  //   [key: string]: any
-  //   name: string
-  //   image: { url: string; alt: string }
-  //   availability: 'outOfStock' | 'available'
-  //   inventory: number
-  //   price: number
-  //   quantity: number
-  // }[] = useMemo(() => {
-  //   return (allVariantProducts ?? []).map((item) => {
-  //     const formatedAditionalProperties = item.additionalProperty.reduce<{
-  //       [key: string]: any
-  //     }>(
-  //       (acc, prop) => ({
-  //         ...acc,
-  //         [prop.name.toLowerCase()]: prop.value,
-  //       }),
-  //       {}
-  //     )
+  } = product
 
-  //     const outOfStock =
-  //       item.offers.offers[0].availability === 'https://schema.org/OutOfStock'
+  const formattedVariantProducts = useMemo(() => {
+    const response = (
+      client?.product.isVariantOf.skuVariants.allVariantProducts ?? []
+    ).map((item: teste) => {
+      const formatedAditionalProperties = item.additionalProperty.reduce<{
+        [key: string]: any
+      }>(
+        (acc, prop) => ({
+          ...acc,
+          [prop.name.toLowerCase()]: prop.value,
+        }),
+        {}
+      )
 
-  //     return {
-  //       id: item.sku,
-  //       name: item.name,
-  //       image: { url: item.image[0].url, alt: item.image[0].alternateName },
-  //       inventory: item.offers.offers[0].quantity,
-  //       availability: outOfStock ? 'outOfStock' : 'available',
-  //       price: item.offers.offers[0].price,
-  //       quantity: cartItem[item.sku] ?? 0,
-  //       ...formatedAditionalProperties,
-  //     }
-  //   })
-  // }, [allVariantProducts, cartItem])
+      const outOfStock =
+        item.offers.offers[0].availability === 'https://schema.org/OutOfStock'
 
-  // const buyButtonProps = allVariantProducts.map((item) => {
-  //   const {
-  //     offers: {
-  //       offers: [{ price, priceWithTaxes, listPrice, listPriceWithTaxes }],
-  //     },
-  //   } = item
+      return {
+        id: item.sku,
+        name: item.name,
+        image: {
+          url: item.image[0].url,
+          alternateName: item.image[0].alternateName,
+        },
+        inventory: item.offers.offers[0].quantity,
+        availability: outOfStock ? 'outOfStock' : 'available',
+        price: item.offers.offers[0].price,
+        quantity: 0,
+        specification: formatedAditionalProperties,
+        offers: item.offers,
+      }
+    })
+    return response
+  }, [client?.product.isVariantOf.skuVariants.allVariantProducts])
 
-  //   // FIXME - Rever essa lógica
-  //   return {
-  //     id: item.sku,
-  //     price,
-  //     priceWithTaxes,
-  //     listPrice,
-  //     listPriceWithTaxes,
-  //     seller,
-  //     quantity: 1,
-  //     itemOffered: {
-  //       sku: item.sku,
-  //       name: item.name,
-  //       gtin,
-  //       image: item.image,
-  //       brand,
-  //       // FIXME - Rever
-  //       isVariantOf: {
-  //         ...isVariantOf,
-  //         skuVariants: {
-  //           ...isVariantOf.skuVariants,
-  //           activeVariations: {
-  //             ...item.additionalProperty.reduce(
-  //               (acc, item) => ({ ...acc, [item.name]: item.value }),
-  //               {}
-  //             ),
-  //           },
-  //         },
-  //       },
-  //       additionalProperty,
-  //       unitMultiplier,
-  //     },
-  //   }
-  // })
-  const buyProps = useBuyButton([])
+  const buyButtonProps = allVariantProductsFromHook
+    .filter((item) => item.quantity)
+    .map((item) => {
+      const {
+        offers: {
+          offers: [{ price, priceWithTaxes, listPrice, listPriceWithTaxes }],
+        },
+      } = item
+
+      // FIXME - Rever essa lógica
+      return {
+        id: item.id,
+        price,
+        priceWithTaxes,
+        listPrice,
+        listPriceWithTaxes,
+        seller,
+        quantity: item.quantity,
+        itemOffered: {
+          sku: item.id,
+          name: item.name,
+          gtin,
+          image: [item.image],
+          brand,
+          // FIXME - Rever
+          isVariantOf: {
+            ...client.product.isVariantOf,
+            skuVariants: {
+              ...client.product.isVariantOf.skuVariants,
+              activeVariations: item.specification,
+            },
+          },
+          additionalProperty,
+          unitMultiplier,
+        },
+      }
+    })
+
+  const buyProps = useBuyButton(buyButtonProps)
 
   return (
     <UISKUMatrixSidebar
       buyProps={buyProps}
-      title={isVariantOf.name}
-      // initialQuantitySelectorValue={defaulCartItemQuantityValue}
-      allVariantProducts={allVariantProducts}
+      title={product.isVariantOf.name ?? ''}
+      loading={isValidating}
+      allVariantProducts={formattedVariantProducts}
       {...props}
     />
   )

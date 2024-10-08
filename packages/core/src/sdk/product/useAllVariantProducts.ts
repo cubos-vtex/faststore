@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 
 import { gql } from '@generated'
 import type {
+  ClientAllVariantProductsQueryQuery,
   ClientProductQueryQuery,
   ClientProductQueryQueryVariables,
 } from '@generated/graphql'
@@ -17,8 +18,11 @@ const query = gql(`
   }
 `)
 
-export const useAllVariantProducts = <T extends ClientProductQueryQuery>(
+export const useAllVariantProducts = <
+  T extends ClientAllVariantProductsQueryQuery
+>(
   productID: string,
+  enabled: boolean,
   fallbackData?: T
 ) => {
   const { channel, locale } = useSession()
@@ -44,5 +48,6 @@ export const useAllVariantProducts = <T extends ClientProductQueryQuery>(
   >(query, variables, {
     fallbackData,
     revalidateOnMount: true,
+    doNotRun: !enabled,
   })
 }

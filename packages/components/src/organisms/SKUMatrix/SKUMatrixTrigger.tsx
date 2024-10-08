@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react'
 import Button from '../../atoms/Button'
 import type { ButtonProps } from '../../atoms/Button'
-import { useSKUMatrix } from './SKUMatrix'
+import { useSKUMatrix } from '../../hooks'
 
 export type SKUMatrixTriggerProps = ButtonProps
 

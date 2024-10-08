@@ -62,7 +62,10 @@ export interface ProductDetailsProps {
     columns: {
       name: string
       additionalColumns?: Array<{ label: string; value: string }>
-      availibility: string
+      availability: {
+        label: string
+        stockDisplaySettings: 'showAvailability' | 'showStockQuantity'
+      }
       price: number
       quantitySelector: number
     }
@@ -110,8 +113,6 @@ function ProductDetails({
   if (!product) {
     throw new Error('NotFound')
   }
-
-  const [open, setOpen] = useState(false)
 
   const {
     id,
@@ -234,20 +235,15 @@ function ProductDetails({
                   <div data-fs-product-details-settings-separator>Or</div>
 
                   <SKUMatrix.Component>
-                    <SKUMatrixTrigger.Component
-                      disabled={isValidating}
-                      onClick={() => setOpen(true)}
-                    >
+                    <SKUMatrixTrigger.Component disabled={isValidating}>
                       {skuMatrix.triggerButtonLabel}
                     </SKUMatrixTrigger.Component>
 
-                    {open && (
-                      <SKUMatrixSidebar.Component
-                        formatter={useFormattedPrice}
-                        columns={skuMatrix.columns}
-                        overlayProps={{ className: styles.section }}
-                      />
-                    )}
+                    <SKUMatrixSidebar.Component
+                      formatter={useFormattedPrice}
+                      columns={skuMatrix.columns}
+                      overlayProps={{ className: styles.section }}
+                    />
                   </SKUMatrix.Component>
                 </>
               )}

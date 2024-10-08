@@ -1649,7 +1649,6 @@
                     "title": "Column",
                     "type": "object",
                     "required": ["label", "value"],
-                    "minItems": 5,
                     "properties": {
                       "label": {
                         "title": "Label",
@@ -1662,10 +1661,27 @@
                     }
                   }
                 },
-                "availibility": {
-                  "title": "Column availibility",
-                  "type": "string",
-                  "default": "Availibility"
+                "availability": {
+                  "title": "Column availability",
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "title": "Label",
+                      "type": "string",
+                      "default": "Availability"
+                    },
+                    "stockDisplaySettings": {
+                      "title": "Stock display settings",
+                      "description": "Control how the stock status of your products is displayed to customers on your online store.",
+                      "type": "string",
+                      "enum": ["showAvailability", "showStockQuantity"],
+                      "enumNames": [
+                        "Show availability (Available/Out of Stock)",
+                        "Show stock quantity"
+                      ],
+                      "default": "showAvailability"
+                    }
+                  }
                 },
                 "price": {
                   "title": "Column price",

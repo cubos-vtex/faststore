@@ -1,9 +1,9 @@
 import Image from 'next/image'
 import type { HTMLAttributes } from 'react'
-import React, { useEffect, useMemo, useState } from 'react'
-import { Badge, Button, OverlayProps, QuantitySelector } from '../..'
+import React, { useEffect, useMemo } from 'react'
+import { Badge, Button, OverlayProps, QuantitySelector, Skeleton } from '../..'
 import Price, { PriceFormatter } from '../../atoms/Price'
-import { useFadeEffect } from '../../hooks'
+import { useFadeEffect, useSKUMatrix } from '../../hooks'
 import {
   Table,
   TableBody,
@@ -16,7 +16,6 @@ import SlideOver, {
   SlideOverHeader,
   SlideOverWidthSize,
 } from '../SlideOver'
-import { useSKUMatrix } from './SKUMatrix'
 
 export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
   /**
@@ -46,25 +45,47 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
   columns: {
     name: string
     additionalColumns?: Array<{ label: string; value: string }>
-    availibility: 'outOfStock' | 'available'
+    availability: {
+      label: string
+      stockDisplaySettings: 'showStockQuantity' | 'showAvailability'
+    }
     price: number
     quantitySelector: number
   }
   /**
-   * SKUVariants.
+   * AllVariantProducts.
    */
   allVariantProducts: {
     id: string
-    [key: string]: any
     name: string
-    image: { url: string; alt: string }
+    image: { url: string; alternateName: string }
     availability: string
     inventory: number
     price: number
     quantity: number
+    specification: { [key: string]: any }
+    offers: {
+      highPrice: number
+      lowPrice: number
+      lowPriceWithTaxes: number
+      offerCount: number
+      priceCurrency: string
+      offers: Array<{
+        listPrice: number
+        listPriceWithTaxes: number
+        sellingPrice: number
+        priceCurrency: string
+        price: number
+        priceWithTaxes: number
+        priceValidUntil: string
+        itemCondition: string
+        availability: string
+        quantity: number
+      }>
+    }
   }[]
   /**
-   * Buy props.
+   * Properties related to the 'add to cart' button
    */
   buyProps: {
     'data-testid': string
@@ -76,10 +97,15 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
    * Formatter function that transforms the raw price value and render the result.
    */
   formatter?: PriceFormatter
+  /**
+   * Function that returns the data reflected from changes.
+   */
+  onChangeItems?(items: SKUMatrixSidebarProps['allVariantProducts']): void
 
-  // initialQuantitySelectorValue: {
-  //   [id: string]: number
-  // }
+  /**
+   * Check if some result is still loading before render the result.
+   */
+  loading?: boolean
 }
 
 function SKUMatrixSidebar({
@@ -91,41 +117,49 @@ function SKUMatrixSidebar({
   columns,
   allVariantProducts,
   buyProps,
-  // initialQuantitySelectorValue,
+  onChangeItems,
+  loading,
   formatter,
   ...otherProps
 }: SKUMatrixSidebarProps) {
   const { fade } = useFadeEffect()
-  const { open, setOpen } = useSKUMatrix()
-  const [cartItems, setCartItems] = useState<
-    SKUMatrixSidebarProps['allVariantProducts']
-  >([])
+  const {
+    open,
+    setOpen,
+    onChangeAllVariantProducts,
+    allVariantProducts: allVariantProductsFromHook,
+    handleChangeQuantityItem,
+  } = useSKUMatrix()
+
   useEffect(() => {
-    setCartItems(allVariantProducts)
+    onChangeAllVariantProducts(allVariantProducts)
   }, [allVariantProducts])
 
-  function heandleQuantityChange(id: string, value: number) {
-    setCartItems((prev) => {
-      const findSKU = prev.find((item) => item.id === id)
-
-      if (findSKU) {
-        findSKU.quantity = value
-      }
-
-      return [...prev]
-    })
-  }
-
   const cartDetails = useMemo(() => {
-    return cartItems.reduce(
+    return allVariantProductsFromHook.reduce(
       (acc, product) => ({
         amount: acc.amount + product.quantity,
         subtotal: acc.subtotal + product.quantity * product.price,
       }),
       { amount: 0, subtotal: 0 }
     )
-  }, [cartItems])
-  if (!open) return null
+  }, [allVariantProductsFromHook])
+
+  function resetQuantityItems() {
+    onChangeAllVariantProducts(
+      allVariantProductsFromHook.map((item) => ({ ...item, quantity: 0 }))
+    )
+  }
+
+  function handleQuantitySelectorChange(id: string, value: number) {
+    const response = handleChangeQuantityItem(id, value)
+
+    onChangeItems?.(response)
+  }
+
+  const totalColumnsSkeletonLength =
+    Object.values(columns).length + (columns.additionalColumns?.length ?? 0) - 1
+
   return (
     <SlideOver
       data-fs-sku-matrix-sidebar
@@ -138,6 +172,7 @@ function SKUMatrixSidebar({
     >
       <SlideOverHeader
         onClose={() => {
+          resetQuantityItems()
           setOpen(false)
         }}
       >
@@ -160,7 +195,7 @@ function SKUMatrixSidebar({
             ))}
 
             <TableCell align="left" variant="header" scope="col">
-              {columns.availibility}
+              {columns.availability.label}
             </TableCell>
 
             <TableCell align="right" variant="header" scope="col">
@@ -174,81 +209,114 @@ function SKUMatrixSidebar({
         </TableHead>
 
         <TableBody>
-          {cartItems.map((variantProduct) => (
-            <TableRow key={`${variantProduct.name}-${variantProduct.id}`}>
-              <TableCell data-fs-sku-matrix-sidebar-cell-image align="left">
-                <div>
-                  <Image
-                    src={variantProduct.image.url}
-                    alt={variantProduct.image.alt}
-                    width={48}
-                    height={48}
-                  />
-                </div>
-                {variantProduct.name}
-              </TableCell>
+          {loading ? (
+            <>
+              {Array.from({ length: 5 }).map((_, index) => {
+                return (
+                  <TableRow key={`table-row-${index}`}>
+                    {Array.from({
+                      length: totalColumnsSkeletonLength,
+                    }).map((_, index) => {
+                      return (
+                        <TableCell key={`table-cel-${index}`}>
+                          <span>
+                            <Skeleton
+                              key={index}
+                              size={{ width: '100%', height: '30px' }}
+                            />
+                          </span>
+                        </TableCell>
+                      )
+                    })}
+                  </TableRow>
+                )
+              })}
+            </>
+          ) : (
+            <>
+              {allVariantProductsFromHook.map((variantProduct) => (
+                <TableRow key={`${variantProduct.name}-${variantProduct.id}`}>
+                  <TableCell data-fs-sku-matrix-sidebar-cell-image align="left">
+                    <div>
+                      <Image
+                        src={variantProduct.image.url}
+                        alt={variantProduct.image.alternateName}
+                        width={48}
+                        height={48}
+                      />
+                    </div>
+                    {variantProduct.name}
+                  </TableCell>
 
-              {columns.additionalColumns?.map(({ value }) => (
-                <TableCell
-                  key={`${variantProduct.name}-${variantProduct.id}-${value}`}
-                  align="left"
-                >
-                  {variantProduct[value]}
-                </TableCell>
+                  {columns.additionalColumns?.map(({ value }) => (
+                    <TableCell
+                      key={`${variantProduct.name}-${variantProduct.id}-${value}`}
+                      align="left"
+                    >
+                      {variantProduct.specification[value]}
+                    </TableCell>
+                  ))}
+
+                  <TableCell align="left">
+                    {columns.availability.stockDisplaySettings ===
+                      'showAvailability' && (
+                      <Badge
+                        variant={
+                          variantProduct.availability === 'outofstock'
+                            ? 'warning'
+                            : 'success'
+                        }
+                      >
+                        {variantProduct.availability === 'outofstock'
+                          ? 'Out of stock'
+                          : 'Available'}
+                      </Badge>
+                    )}
+
+                    {columns.availability.stockDisplaySettings ===
+                      'showStockQuantity' && variantProduct.inventory}
+                  </TableCell>
+
+                  <TableCell align="right">
+                    <div data-fs-sku-matrix-sidebar-table-price>
+                      <Price
+                        value={variantProduct.price}
+                        variant="spot"
+                        formatter={formatter}
+                      />
+                    </div>
+                  </TableCell>
+
+                  <TableCell
+                    align="right"
+                    data-fs-sku-matrix-sidebar-table-cell-quantity-selector
+                  >
+                    <div data-fs-sku-matrix-sidebar-table-action>
+                      <QuantitySelector
+                        min={0}
+                        max={variantProduct.inventory}
+                        disabled={
+                          !variantProduct.inventory ||
+                          variantProduct.availability === ''
+                        }
+                        initial={variantProduct.quantity}
+                        onChange={(value) =>
+                          handleQuantitySelectorChange(variantProduct.id, value)
+                        }
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
               ))}
-
-              <TableCell align="left">
-                <Badge
-                  variant={
-                    variantProduct.availability === 'outofstock'
-                      ? 'warning'
-                      : 'success'
-                  }
-                >
-                  {variantProduct.availability === 'outofstock'
-                    ? 'Out of stock'
-                    : 'Available'}
-                </Badge>
-              </TableCell>
-
-              <TableCell align="right">
-                <div data-fs-sku-matrix-sidebar-table-price>
-                  <Price
-                    value={variantProduct.price}
-                    variant="spot"
-                    formatter={formatter}
-                  />
-                </div>
-              </TableCell>
-
-              <TableCell
-                align="right"
-                data-fs-sku-matrix-sidebar-table-cell-quantity-selector
-              >
-                <div data-fs-sku-matrix-sidebar-table-action>
-                  <QuantitySelector
-                    min={0}
-                    max={variantProduct.inventory}
-                    disabled={
-                      !variantProduct.inventory ||
-                      variantProduct.availability === ''
-                    }
-                    initial={variantProduct.quantity}
-                    onChange={(value) =>
-                      heandleQuantityChange(variantProduct.name, value)
-                    }
-                  />
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
+            </>
+          )}
         </TableBody>
       </Table>
 
       <footer data-fs-sku-matrix-sidebar-footer>
         <div>
           <p>
-            {cartDetails.amount} {cartDetails.amount !== 1 ? 'Items' : 'Item'}{' '}
+            {cartDetails.amount} {cartDetails.amount !== 1 ? 'Items' : 'Item'}
           </p>
           <Price
             value={cartDetails.subtotal}

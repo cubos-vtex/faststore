@@ -64,7 +64,7 @@ export const useBuyButton = (item: CartItem | CartItem[] | null) => {
       })
 
       itemIsArray
-        ? item.map((value) => cartStore.addItem(value))
+        ? item.forEach((value) => cartStore.addItem(value))
         : cartStore.addItem(item)
 
       openCart()
