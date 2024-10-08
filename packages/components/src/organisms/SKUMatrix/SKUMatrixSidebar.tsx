@@ -1,19 +1,22 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
 import type { HTMLAttributes } from 'react'
-import SlideOver, { SlideOverHeader } from '../SlideOver'
+import React, { useEffect, useMemo, useState } from 'react'
+import { Badge, Button, OverlayProps, QuantitySelector } from '../..'
+import Price, { PriceFormatter } from '../../atoms/Price'
+import { useFadeEffect } from '../../hooks'
 import {
   Table,
-  TableHead,
   TableBody,
-  TableRow,
   TableCell,
+  TableHead,
+  TableRow,
 } from '../../molecules/Table'
-import Price, { PriceFormatter } from '../../atoms/Price'
-import { SlideOverDirection, SlideOverWidthSize } from '../SlideOver'
-import { useFadeEffect } from '../../hooks'
-import { Badge, Button, OverlayProps, QuantitySelector } from '../..'
+import SlideOver, {
+  SlideOverDirection,
+  SlideOverHeader,
+  SlideOverWidthSize,
+} from '../SlideOver'
 import { useSKUMatrix } from './SKUMatrix'
-import Image from 'next/image'
 
 export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
   /**
@@ -97,7 +100,6 @@ function SKUMatrixSidebar({
   const [cartItems, setCartItems] = useState<
     SKUMatrixSidebarProps['allVariantProducts']
   >([])
-
   useEffect(() => {
     setCartItems(allVariantProducts)
   }, [allVariantProducts])
@@ -123,7 +125,7 @@ function SKUMatrixSidebar({
       { amount: 0, subtotal: 0 }
     )
   }, [cartItems])
-
+  if (!open) return null
   return (
     <SlideOver
       data-fs-sku-matrix-sidebar

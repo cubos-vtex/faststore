@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import type { CurrencyCode, ViewItemEvent } from '@faststore/sdk'
 import { sendAnalyticsEvent } from '@faststore/sdk'
@@ -12,10 +12,10 @@ import Section from '../Section'
 
 import styles from './section.module.scss'
 
-import { usePDP } from '../../../sdk/overrides/PageProvider'
-import { useOverrideComponents } from '../../../sdk/overrides/OverrideContext'
-import { ProductDetailsDefaultComponents } from './DefaultComponents'
 import { getOverridableSection } from '../../../sdk/overrides/getOverriddenSection'
+import { useOverrideComponents } from '../../../sdk/overrides/OverrideContext'
+import { usePDP } from '../../../sdk/overrides/PageProvider'
+import { ProductDetailsDefaultComponents } from './DefaultComponents'
 
 export interface ProductDetailsProps {
   productTitle: {
@@ -107,10 +107,11 @@ function ProductDetails({
   const context = usePDP()
   const { product, isValidating } = context?.data
   const [quantity, setQuantity] = useState(1)
-
   if (!product) {
     throw new Error('NotFound')
   }
+
+  const [open, setOpen] = useState(false)
 
   const {
     id,
@@ -120,11 +121,7 @@ function ProductDetails({
     brand,
     isVariantOf,
     description,
-    isVariantOf: {
-      name,
-      productGroupID: productId,
-      skuVariants: { allVariantProducts },
-    },
+    isVariantOf: { name, productGroupID: productId },
     image: productImages,
     offers: {
       offers: [{ availability, price, listPrice, listPriceWithTaxes, seller }],
@@ -237,14 +234,20 @@ function ProductDetails({
                   <div data-fs-product-details-settings-separator>Or</div>
 
                   <SKUMatrix.Component>
-                    <SKUMatrixTrigger.Component disabled={isValidating}>
+                    <SKUMatrixTrigger.Component
+                      disabled={isValidating}
+                      onClick={() => setOpen(true)}
+                    >
                       {skuMatrix.triggerButtonLabel}
                     </SKUMatrixTrigger.Component>
-                    <SKUMatrixSidebar.Component
-                      formatter={useFormattedPrice}
-                      columns={skuMatrix.columns}
-                      overlayProps={{ className: styles.section }}
-                    />
+
+                    {open && (
+                      <SKUMatrixSidebar.Component
+                        formatter={useFormattedPrice}
+                        columns={skuMatrix.columns}
+                        overlayProps={{ className: styles.section }}
+                      />
+                    )}
                   </SKUMatrix.Component>
                 </>
               )}
@@ -312,44 +315,6 @@ export const fragment = gql(`
     isVariantOf {
       name
       productGroupID
-      skuVariants {
-        activeVariations
-        slugsMap
-        availableVariations
-        allVariantProducts {
-					sku
-          name
-          image {
-            url
-            alternateName
-          }
-          offers {
-            highPrice
-            lowPrice
-            lowPriceWithTaxes
-            offerCount
-            priceCurrency
-            offers {
-              listPrice
-              listPriceWithTaxes
-              sellingPrice
-              priceCurrency
-              price
-              priceWithTaxes
-              priceValidUntil
-              itemCondition
-              availability
-              quantity
-            }
-          }
-          additionalProperty {
-            propertyID
-            value
-            name
-            valueReference
-          }
-        }
-      }
     }
 
     image {

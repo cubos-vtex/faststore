@@ -1165,6 +1165,39 @@ export type ProductDetailsFragment_ProductFragment = {
       activeVariations: any | null
       slugsMap: any | null
       availableVariations: any | null
+    } | null
+  }
+  image: Array<{ url: string; alternateName: string }>
+  brand: { name: string }
+  offers: {
+    lowPrice: number
+    lowPriceWithTaxes: number
+    offers: Array<{
+      availability: string
+      price: number
+      priceWithTaxes: number
+      listPrice: number
+      listPriceWithTaxes: number
+      seller: { identifier: string }
+    }>
+  }
+  additionalProperty: Array<{
+    propertyID: string
+    name: string
+    value: any
+    valueReference: any
+  }>
+}
+
+export type ProductSkuMatrixSidebarFragment_ProductFragment = {
+  id: string
+  isVariantOf: {
+    name: string
+    productGroupID: string
+    skuVariants: {
+      activeVariations: any | null
+      slugsMap: any | null
+      availableVariations: any | null
       allVariantProducts: Array<{
         sku: string
         name: string
@@ -1197,26 +1230,6 @@ export type ProductDetailsFragment_ProductFragment = {
       }> | null
     } | null
   }
-  image: Array<{ url: string; alternateName: string }>
-  brand: { name: string }
-  offers: {
-    lowPrice: number
-    lowPriceWithTaxes: number
-    offers: Array<{
-      availability: string
-      price: number
-      priceWithTaxes: number
-      listPrice: number
-      listPriceWithTaxes: number
-      seller: { identifier: string }
-    }>
-  }
-  additionalProperty: Array<{
-    propertyID: string
-    value: any
-    name: string
-    valueReference: any
-  }>
 }
 
 export type ClientManyProductsFragment = {
@@ -1303,42 +1316,12 @@ export type ServerProductQueryQuery = {
         activeVariations: any | null
         slugsMap: any | null
         availableVariations: any | null
-        allVariantProducts: Array<{
-          sku: string
-          name: string
-          image: Array<{ url: string; alternateName: string }>
-          offers: {
-            highPrice: number
-            lowPrice: number
-            lowPriceWithTaxes: number
-            offerCount: number
-            priceCurrency: string
-            offers: Array<{
-              listPrice: number
-              listPriceWithTaxes: number
-              sellingPrice: number
-              priceCurrency: string
-              price: number
-              priceWithTaxes: number
-              priceValidUntil: string
-              itemCondition: string
-              availability: string
-              quantity: number
-            }>
-          }
-          additionalProperty: Array<{
-            propertyID: string
-            value: any
-            name: string
-            valueReference: any
-          }>
-        }> | null
       } | null
     }
     additionalProperty: Array<{
       propertyID: string
-      value: any
       name: string
+      value: any
       valueReference: any
     }>
   }
@@ -1455,6 +1438,55 @@ export type SubscribeToNewsletterMutation = {
   subscribeToNewsletter: { id: string } | null
 }
 
+export type ClientAllVariantProductsQueryQueryVariables = Exact<{
+  locator: Array<IStoreSelectedFacet> | IStoreSelectedFacet
+}>
+
+export type ClientAllVariantProductsQueryQuery = {
+  product: {
+    id: string
+    isVariantOf: {
+      name: string
+      productGroupID: string
+      skuVariants: {
+        activeVariations: any | null
+        slugsMap: any | null
+        availableVariations: any | null
+        allVariantProducts: Array<{
+          sku: string
+          name: string
+          image: Array<{ url: string; alternateName: string }>
+          offers: {
+            highPrice: number
+            lowPrice: number
+            lowPriceWithTaxes: number
+            offerCount: number
+            priceCurrency: string
+            offers: Array<{
+              listPrice: number
+              listPriceWithTaxes: number
+              sellingPrice: number
+              priceCurrency: string
+              price: number
+              priceWithTaxes: number
+              priceValidUntil: string
+              itemCondition: string
+              availability: string
+              quantity: number
+            }>
+          }
+          additionalProperty: Array<{
+            propertyID: string
+            value: any
+            name: string
+            valueReference: any
+          }>
+        }> | null
+      } | null
+    }
+  }
+}
+
 export type ClientManyProductsQueryQueryVariables = Exact<{
   first: Scalars['Int']['input']
   after: InputMaybe<Scalars['String']['input']>
@@ -1491,8 +1523,8 @@ export type ClientManyProductsQueryQuery = {
           }
           additionalProperty: Array<{
             propertyID: string
-            value: any
             name: string
+            value: any
             valueReference: any
           }>
         }
@@ -1561,36 +1593,6 @@ export type ClientProductQueryQuery = {
         activeVariations: any | null
         slugsMap: any | null
         availableVariations: any | null
-        allVariantProducts: Array<{
-          sku: string
-          name: string
-          image: Array<{ url: string; alternateName: string }>
-          offers: {
-            highPrice: number
-            lowPrice: number
-            lowPriceWithTaxes: number
-            offerCount: number
-            priceCurrency: string
-            offers: Array<{
-              listPrice: number
-              listPriceWithTaxes: number
-              sellingPrice: number
-              priceCurrency: string
-              price: number
-              priceWithTaxes: number
-              priceValidUntil: string
-              itemCondition: string
-              availability: string
-              quantity: number
-            }>
-          }
-          additionalProperty: Array<{
-            propertyID: string
-            value: any
-            name: string
-            valueReference: any
-          }>
-        }> | null
       } | null
     }
     image: Array<{ url: string; alternateName: string }>
@@ -1609,8 +1611,8 @@ export type ClientProductQueryQuery = {
     }
     additionalProperty: Array<{
       propertyID: string
-      value: any
       name: string
+      value: any
       valueReference: any
     }>
   }
@@ -1648,8 +1650,8 @@ export type ClientSearchSuggestionsQueryQuery = {
         }
         additionalProperty: Array<{
           propertyID: string
-          value: any
           name: string
+          value: any
           valueReference: any
         }>
       }>
@@ -1863,44 +1865,6 @@ export const ProductDetailsFragment_ProductFragmentDoc =
   isVariantOf {
     name
     productGroupID
-    skuVariants {
-      activeVariations
-      slugsMap
-      availableVariations
-      allVariantProducts {
-        sku
-        name
-        image {
-          url
-          alternateName
-        }
-        offers {
-          highPrice
-          lowPrice
-          lowPriceWithTaxes
-          offerCount
-          priceCurrency
-          offers {
-            listPrice
-            listPriceWithTaxes
-            sellingPrice
-            priceCurrency
-            price
-            priceWithTaxes
-            priceValidUntil
-            itemCondition
-            availability
-            quantity
-          }
-        }
-        additionalProperty {
-          propertyID
-          value
-          name
-          valueReference
-        }
-      }
-    }
   }
   image {
     url
@@ -1962,6 +1926,60 @@ export const ProductDetailsFragment_ProductFragmentDoc =
     { fragmentName: 'ProductDetailsFragment_product' }
   ) as unknown as TypedDocumentString<
     ProductDetailsFragment_ProductFragment,
+    unknown
+  >
+export const ProductSkuMatrixSidebarFragment_ProductFragmentDoc =
+  new TypedDocumentString(
+    `
+    fragment ProductSKUMatrixSidebarFragment_product on StoreProduct {
+  id: productID
+  isVariantOf {
+    name
+    productGroupID
+    skuVariants {
+      activeVariations
+      slugsMap
+      availableVariations
+      allVariantProducts {
+        sku
+        name
+        image {
+          url
+          alternateName
+        }
+        offers {
+          highPrice
+          lowPrice
+          lowPriceWithTaxes
+          offerCount
+          priceCurrency
+          offers {
+            listPrice
+            listPriceWithTaxes
+            sellingPrice
+            priceCurrency
+            price
+            priceWithTaxes
+            priceValidUntil
+            itemCondition
+            availability
+            quantity
+          }
+        }
+        additionalProperty {
+          propertyID
+          value
+          name
+          valueReference
+        }
+      }
+    }
+  }
+}
+    `,
+    { fragmentName: 'ProductSKUMatrixSidebarFragment_product' }
+  ) as unknown as TypedDocumentString<
+    ProductSkuMatrixSidebarFragment_ProductFragment,
     unknown
   >
 export const ClientManyProductsFragmentDoc = new TypedDocumentString(
@@ -2149,7 +2167,7 @@ export const ServerCollectionPageQueryDocument = {
 export const ServerProductQueryDocument = {
   __meta__: {
     operationName: 'ServerProductQuery',
-    operationHash: 'b1bc611b6e10a659dd27fc8c2a54d4386a7d07de',
+    operationHash: '59d53edc20e918b9ac3b89e52e1eb6343f71db18',
   },
 } as unknown as TypedDocumentString<
   ServerProductQueryQuery,
@@ -2173,6 +2191,15 @@ export const SubscribeToNewsletterDocument = {
   SubscribeToNewsletterMutation,
   SubscribeToNewsletterMutationVariables
 >
+export const ClientAllVariantProductsQueryDocument = {
+  __meta__: {
+    operationName: 'ClientAllVariantProductsQuery',
+    operationHash: '4039e05f01a2fe449e20e8b82170d0ba94b1fbe9',
+  },
+} as unknown as TypedDocumentString<
+  ClientAllVariantProductsQueryQuery,
+  ClientAllVariantProductsQueryQueryVariables
+>
 export const ClientManyProductsQueryDocument = {
   __meta__: {
     operationName: 'ClientManyProductsQuery',
@@ -2194,7 +2221,7 @@ export const ClientProductGalleryQueryDocument = {
 export const ClientProductQueryDocument = {
   __meta__: {
     operationName: 'ClientProductQuery',
-    operationHash: 'e5deaec64cbfb96af9a8dd0de3c1b3b987c4f9fd',
+    operationHash: '17eebe56abfc90a2e34761d871926a2475c32350',
   },
 } as unknown as TypedDocumentString<
   ClientProductQueryQuery,
