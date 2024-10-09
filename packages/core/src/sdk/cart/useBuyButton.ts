@@ -1,12 +1,11 @@
-import { sendAnalyticsEvent } from '@faststore/sdk'
+import type { AddToCartEvent, CurrencyCode } from '@faststore/sdk'
 import { useCallback } from 'react'
-import type { CurrencyCode, AddToCartEvent } from '@faststore/sdk'
 
 import type { AnalyticsItem } from 'src/sdk/analytics/types'
 import type { CartItem } from 'src/sdk/cart'
 
-import { useSession } from '../session'
 import { useUI } from '@faststore/ui'
+import { useSession } from '../session'
 import { cartStore } from './index'
 
 export const useBuyButton = (item: CartItem | CartItem[] | null) => {
@@ -52,15 +51,17 @@ export const useBuyButton = (item: CartItem | CartItem[] | null) => {
         return item.map(generatedItem)
       }
 
-      sendAnalyticsEvent<AddToCartEvent<AnalyticsItem>>({
-        name: 'add_to_cart',
-        params: {
-          currency: code as CurrencyCode,
-          // TODO: In the future, we can explore more robust ways of
-          // calculating the value (gift items, discounts, etc.).
-          value,
-          items: getItems(),
-        },
+      import('@faststore/sdk').then(({ sendAnalyticsEvent }) => {
+        sendAnalyticsEvent<AddToCartEvent<AnalyticsItem>>({
+          name: 'add_to_cart',
+          params: {
+            currency: code as CurrencyCode,
+            // TODO: In the future, we can explore more robust ways of
+            // calculating the value (gift items, discounts, etc.).
+            value,
+            items: getItems(),
+          },
+        })
       })
 
       itemIsArray

@@ -4,7 +4,6 @@ import { NextSeo, SiteLinksSearchBoxJsonLd } from 'next-seo'
 import type { ComponentType } from 'react'
 
 import RenderSections from 'src/components/cms/RenderSections'
-import BannerNewsletter from 'src/components/sections/BannerNewsletter/BannerNewsletter'
 import { OverriddenDefaultBannerText as BannerText } from 'src/components/sections/BannerText/OverriddenDefaultBannerText'
 import { OverriddenDefaultHero as Hero } from 'src/components/sections/Hero/OverriddenDefaultHero'
 import Incentives from 'src/components/sections/Incentives'
@@ -12,7 +11,6 @@ import { OverriddenDefaultNewsletter as Newsletter } from 'src/components/sectio
 import { OverriddenDefaultProductShelf as ProductShelf } from 'src/components/sections/ProductShelf/OverriddenDefaultProductShelf'
 import ProductTiles from 'src/components/sections/ProductTiles'
 import CUSTOM_COMPONENTS from 'src/customizations/src/components'
-import { mark } from 'src/sdk/tests/mark'
 import type { PageContentType } from 'src/server/cms'
 import { getPage } from 'src/server/cms'
 
@@ -22,7 +20,7 @@ import GlobalSections, {
 } from 'src/components/cms/GlobalSections'
 import PageProvider from 'src/sdk/overrides/PageProvider'
 import { getDynamicContent } from 'src/utils/dynamicContent'
-import storeConfig from '../../faststore.config'
+import storeConfig from '../../discovery.config'
 
 /* A list of components that can be used in the CMS. */
 const COMPONENTS: Record<string, ComponentType<any>> = {
@@ -31,7 +29,6 @@ const COMPONENTS: Record<string, ComponentType<any>> = {
   ProductShelf,
   ProductTiles,
   BannerText,
-  BannerNewsletter,
   Newsletter,
   ...CUSTOM_COMPONENTS,
 }
@@ -100,36 +97,33 @@ export const getStaticProps: GetStaticProps<
   Record<string, string>,
   Locator
 > = async ({ previewData }) => {
-  const serverData = await getDynamicContent({ pageType: 'home' })
-  const globalSections = await getGlobalSectionsData(previewData)
+  const globalSectionsPromise = getGlobalSectionsData(previewData)
+  const serverDataPromise = getDynamicContent({ pageType: 'home' })
 
+  let cmsPage = null
   if (storeConfig.cms.data) {
     const cmsData = JSON.parse(storeConfig.cms.data)
-    const page = cmsData['home'][0]
-
-    if (page) {
-      const pageData = await getPage<PageContentType>({
-        contentType: 'home',
-        documentId: page.documentId,
-        versionId: page.versionId,
-      })
-
-      return {
-        props: { page: pageData, globalSections, serverData },
-      }
-    }
+    cmsPage = cmsData['home'][0]
   }
-
-  const page = await getPage<PageContentType>({
-    ...(previewData?.contentType === 'home' && previewData),
-    contentType: 'home',
-  })
+  const pagePromise = cmsPage
+    ? getPage<PageContentType>({
+        contentType: 'home',
+        documentId: cmsPage.documentId,
+        versionId: cmsPage.versionId,
+      })
+    : getPage<PageContentType>({
+        ...(previewData?.contentType === 'home' && previewData),
+        contentType: 'home',
+      })
+  const [page, globalSections, serverData] = await Promise.all([
+    pagePromise,
+    globalSectionsPromise,
+    serverDataPromise,
+  ])
 
   return {
     props: { page, globalSections, serverData },
   }
 }
 
-Page.displayName = 'Page'
-
-export default mark(Page)
+export default Page

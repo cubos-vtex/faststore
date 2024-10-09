@@ -22,10 +22,9 @@ import { OverriddenDefaultProductShelf as ProductShelf } from 'src/components/se
 import ProductTiles from 'src/components/sections/ProductTiles'
 import CUSTOM_COMPONENTS from 'src/customizations/src/components'
 import { useSession } from 'src/sdk/session'
-import { mark } from 'src/sdk/tests/mark'
 import { execute } from 'src/server'
 
-import storeConfig from 'faststore.config'
+import storeConfig from 'discovery.config'
 import GlobalSections, {
   GlobalSectionsData,
   getGlobalSectionsData,
@@ -274,6 +273,4 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-Page.displayName = 'Page'
-
-export default mark(Page)
+export default Page

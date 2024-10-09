@@ -13,10 +13,9 @@ import { SROnly as UISROnly } from '@faststore/ui'
 
 import { ITEMS_PER_PAGE } from 'src/constants'
 import { useApplySearchState } from 'src/sdk/search/state'
-import { mark } from 'src/sdk/tests/mark'
 
 import { Locator } from '@vtex/client-cms'
-import storeConfig from 'faststore.config'
+import storeConfig from 'discovery.config'
 import GlobalSections, {
   getGlobalSectionsData,
   GlobalSectionsData,
@@ -153,6 +152,4 @@ export const getStaticProps: GetStaticProps<
   }
 }
 
-Page.displayName = 'Page'
-
-export default mark(Page)
+export default Page
