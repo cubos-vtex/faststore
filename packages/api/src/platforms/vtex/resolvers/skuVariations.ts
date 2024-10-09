@@ -4,7 +4,6 @@ import type { StoreProduct } from './product'
 import {
   createSlugsMap,
   getActiveSkuVariations,
-  // getFormattedAllVariantProducts,
   getFormattedVariations,
   getVariantsByName,
 } from '../utils/skuVariants'
