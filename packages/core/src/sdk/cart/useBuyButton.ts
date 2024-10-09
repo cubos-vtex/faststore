@@ -76,7 +76,7 @@ export const useBuyButton = (item: CartItem | CartItem[] | null) => {
   return {
     onClick,
     'data-testid': 'buy-button',
-    'data-sku': itemIsArray ? 'sku-matrix-sidebar' : item.itemOffered.sku,
+    'data-sku': itemIsArray ? 'sku-matrix-sidebar' : item?.itemOffered.sku,
     'data-seller': itemIsArray
       ? item[0]?.seller.identifier
       : item?.seller.identifier,

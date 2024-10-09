@@ -177,7 +177,7 @@ function SKUMatrixSidebar({
                       length: totalColumnsSkeletonLength,
                     }).map((_, index) => {
                       return (
-                        <TableCell key={`table-cel-${index}`}>
+                        <TableCell key={`table-cell-${index}`}>
                           <span>
                             <Skeleton
                               key={index}
@@ -302,11 +302,7 @@ function SKUMatrixSidebar({
           />
         </div>
 
-        <Button
-          variant="primary"
-          disabled={cartDetails.amount < 1}
-          {...buyProps}
-        >
+        <Button variant="primary" disabled={!cartDetails.amount} {...buyProps}>
           Add to Cart
         </Button>
       </footer>
