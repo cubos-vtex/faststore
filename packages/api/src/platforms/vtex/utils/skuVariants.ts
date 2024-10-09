@@ -12,22 +12,6 @@ type FormattedSkuVariant = {
   value: string
 }
 
-type AllVariantProducts = {
-  name: string;
-  productID: string;
-  referenceCode: string;
-  price: number;
-  priceWithTaxes: number;
-  quantity: number;
-  itemCondition: string;
-  additionalProperties: {
-    name: string;
-    value: string;
-    valueReference: string;
-    propertyID: string;
-  }[];
-}
-
 const SKU_IMAGE_LABEL = 'skuvariation'
 
 /**
@@ -255,28 +239,4 @@ export function getFormattedVariations(
   })
 
   return sortVariants(variantsByName)
-}
-
-export function getFormattedAllVariantProducts(
-  items: Item[]
-): AllVariantProducts[] {
-  return items.map((item) => {
-    return {
-      name: item.name,
-      productID: item.itemId,
-      referenceCode: item.referenceId?.[0]?.Value ?? '',
-      price: item.sellers[0].commertialOffer.Price,
-      priceWithTaxes: item.sellers[0].commertialOffer.Price + item.sellers[0].commertialOffer.Tax,
-      quantity: item.sellers[0].commertialOffer.AvailableQuantity,
-      itemCondition: "GOOD",
-      additionalProperties: item.variations.map((variation) => {
-        return {
-          name: variation.name,
-          value: variation.values[0],
-          valueReference: variation.values[0],
-          propertyID: variation.name
-        }
-      })
-    }
-  })
 }
