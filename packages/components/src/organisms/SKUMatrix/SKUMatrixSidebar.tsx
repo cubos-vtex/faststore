@@ -3,7 +3,8 @@ import type { HTMLAttributes } from 'react'
 import React, { useMemo } from 'react'
 import { Badge, Button, OverlayProps, QuantitySelector, Skeleton } from '../..'
 import Price, { PriceFormatter } from '../../atoms/Price'
-import { useFadeEffect, useSKUMatrix } from '../../hooks'
+import Icon from '../../atoms/Icon'
+import { useFadeEffect, useSKUMatrix, useUI } from '../../hooks'
 import {
   Table,
   TableBody,
@@ -90,19 +91,20 @@ function SKUMatrixSidebar({
     open,
     setOpen,
     setAllVariantProducts,
-    allVariantProducts: allVariantProductsFromHook,
+    allVariantProducts,
     handleChangeQuantityItem,
   } = useSKUMatrix()
+  const { pushToast } = useUI()
 
   const cartDetails = useMemo(() => {
-    return allVariantProductsFromHook.reduce(
+    return allVariantProducts.reduce(
       (acc, product) => ({
         amount: acc.amount + product.selectedCount,
         subtotal: acc.subtotal + product.selectedCount * product.price,
       }),
       { amount: 0, subtotal: 0 }
     )
-  }, [allVariantProductsFromHook])
+  }, [allVariantProducts])
 
   function resetQuantityItems() {
     setAllVariantProducts((prev) =>
@@ -191,7 +193,7 @@ function SKUMatrixSidebar({
             </>
           ) : (
             <>
-              {allVariantProductsFromHook.map((variantProduct) => (
+              {allVariantProducts.map((variantProduct) => (
                 <TableRow key={`${variantProduct.name}-${variantProduct.id}`}>
                   <TableCell data-fs-sku-matrix-sidebar-cell-image align="left">
                     <div>
@@ -260,6 +262,24 @@ function SKUMatrixSidebar({
                         onChange={(value) =>
                           handleQuantitySelectorChange(variantProduct.id, value)
                         }
+                        onValidateBlur={(
+                          min: number,
+                          maxValue: number,
+                          quantity: number
+                        ) => {
+                          pushToast({
+                            title: 'Invalid quantity!',
+                            message: `The quantity you entered is outside the range of ${min} to ${maxValue}. The quantity was set to ${quantity}.`,
+                            status: 'INFO',
+                            icon: (
+                              <Icon
+                                name="CircleWavyWarning"
+                                width={30}
+                                height={30}
+                              />
+                            ),
+                          })
+                        }}
                       />
                     </div>
                   </TableCell>
