@@ -4,6 +4,7 @@ import {
   useSKUMatrix,
 } from '@faststore/ui'
 import { gql } from '@generated/gql'
+import { useEffect } from 'react'
 import { useBuyButton } from 'src/sdk/cart/useBuyButton'
 import { usePDP } from 'src/sdk/overrides/PageProvider'
 import { useAllVariantProducts } from 'src/sdk/product/useAllVariantProducts'
@@ -15,11 +16,11 @@ function SKUMatrixSidebar(props: SKUMatrixProps) {
     data: { product },
   } = usePDP()
 
-  const { allVariantProducts: allVariantProductsFromHook, open } =
-    useSKUMatrix()
-  const { data: clientData, isValidating } = useAllVariantProducts(
+  const { allVariantProducts, open, setAllVariantProducts } = useSKUMatrix()
+  const { isValidating } = useAllVariantProducts(
     product.id,
-    open
+    open,
+    setAllVariantProducts
   )
 
   const {
@@ -33,7 +34,7 @@ function SKUMatrixSidebar(props: SKUMatrixProps) {
     },
   } = product
 
-  const buyButtonProps = allVariantProductsFromHook
+  const buyButtonProps = allVariantProducts
     .filter((item) => item.selectedCount)
     .map((item) => {
       const {
@@ -76,7 +77,6 @@ function SKUMatrixSidebar(props: SKUMatrixProps) {
       buyProps={buyProps}
       title={product.isVariantOf.name ?? ''}
       loading={isValidating}
-      allVariantProducts={clientData}
       {...props}
     />
   )

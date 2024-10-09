@@ -41,6 +41,7 @@ export const useAllVariantProducts = <
 >(
   productID: string,
   enabled: boolean,
+  callBack: (data: FormattedVariantProduct[]) => void,
   fallbackData?: T
 ) => {
   const { channel, locale } = useSession()
@@ -68,41 +69,44 @@ export const useAllVariantProducts = <
       revalidateOnMount: true,
       doNotRun: !enabled,
       onSuccess: (data: ClientAllVariantProductsQueryQuery) => {
-        return data.product.isVariantOf.skuVariants.allVariantProducts.map(
-          (item) => {
-            const specifications = item.additionalProperty.reduce<{
-              [key: string]: any
-            }>(
-              (acc, prop) => ({
-                ...acc,
-                [prop.name.toLowerCase()]: prop.value,
-              }),
-              {}
-            )
+        const formattedData =
+          data.product.isVariantOf.skuVariants.allVariantProducts.map(
+            (item) => {
+              const specifications = item.additionalProperty.reduce<{
+                [key: string]: any
+              }>(
+                (acc, prop) => ({
+                  ...acc,
+                  [prop.name.toLowerCase()]: prop.value,
+                }),
+                {}
+              )
 
-            const outOfStock =
-              item.offers.offers[0].availability ===
-              'https://schema.org/OutOfStock'
+              const outOfStock =
+                item.offers.offers[0].availability ===
+                'https://schema.org/OutOfStock'
 
-            return {
-              id: item.sku,
-              name: item.name,
-              image: {
-                url: item.image[0].url,
-                alternateName: item.image[0].alternateName,
-              },
-              inventory: item.offers.offers[0].quantity,
-              availability: outOfStock ? 'outOfStock' : 'available',
-              price: item.offers.offers[0].price,
-              listPrice: item.offers.offers[0].listPrice,
-              priceWithTaxes: item.offers.offers[0].priceWithTaxes,
-              listPriceWithTaxes: item.offers.offers[0].listPriceWithTaxes,
-              specifications,
-              offers: item.offers,
-              selectedCount: 0,
+              return {
+                id: item.sku,
+                name: item.name,
+                image: {
+                  url: item.image[0].url,
+                  alternateName: item.image[0].alternateName,
+                },
+                inventory: item.offers.offers[0].quantity,
+                availability: outOfStock ? 'outOfStock' : 'available',
+                price: item.offers.offers[0].price,
+                listPrice: item.offers.offers[0].listPrice,
+                priceWithTaxes: item.offers.offers[0].priceWithTaxes,
+                listPriceWithTaxes: item.offers.offers[0].listPriceWithTaxes,
+                specifications,
+                offers: item.offers,
+                selectedCount: 0,
+              }
             }
-          }
-        )
+          )
+
+        callBack(formattedData)
       },
     }
   )

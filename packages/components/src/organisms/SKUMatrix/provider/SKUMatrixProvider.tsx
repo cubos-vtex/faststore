@@ -40,7 +40,9 @@ interface IAllVariantProducts {
 export interface SKUMatrixProviderContextValue {
   open: boolean
   allVariantProducts: IAllVariantProducts[]
-  onChangeAllVariantProducts(items: IAllVariantProducts[]): void
+  setAllVariantProducts(
+    items: React.SetStateAction<IAllVariantProducts[]>
+  ): void
   handleChangeQuantityItem(id: string, value: number): IAllVariantProducts[]
   setOpen(value: boolean): void
 }
@@ -67,16 +69,12 @@ function SKUMatrixProvider({ children }: { children: ReactNode }) {
     [allVariantProducts]
   )
 
-  function onChangeAllVariantProducts(arr: IAllVariantProducts[]) {
-    setAllVariantProducts([...arr])
-  }
-
   return (
     <SKUMatrixContext.Provider
       value={{
         open,
         allVariantProducts,
-        onChangeAllVariantProducts,
+        setAllVariantProducts,
         handleChangeQuantityItem,
         setOpen,
       }}

@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import type { HTMLAttributes } from 'react'
-import React, { useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { Badge, Button, OverlayProps, QuantitySelector, Skeleton } from '../..'
 import Price, { PriceFormatter } from '../../atoms/Price'
 import { useFadeEffect, useSKUMatrix } from '../../hooks'
@@ -52,44 +52,7 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
     price: number
     quantitySelector: number
   }
-  /**
-   * AllVariantProducts.
-   */
-  allVariantProducts: {
-    id: string
-    name: string
-    image: {
-      url: string
-      alternateName: string
-    }
-    inventory: number
-    availability: string
-    price: number
-    listPrice: number
-    priceWithTaxes: number
-    listPriceWithTaxes: number
-    specifications: Record<string, string>
-    selectedCount: number
-    offers: {
-      highPrice: number
-      lowPrice: number
-      lowPriceWithTaxes: number
-      offerCount: number
-      priceCurrency: string
-      offers: Array<{
-        listPrice: number
-        listPriceWithTaxes: number
-        sellingPrice: number
-        priceCurrency: string
-        price: number
-        priceWithTaxes: number
-        priceValidUntil: string
-        itemCondition: string
-        availability: string
-        quantity: number
-      }>
-    }
-  }[]
+
   /**
    * Properties related to the 'add to cart' button
    */
@@ -103,10 +66,6 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
    * Formatter function that transforms the raw price value and render the result.
    */
   formatter?: PriceFormatter
-  /**
-   * Function that returns the data reflected from changes.
-   */
-  onChangeItems?(items: SKUMatrixSidebarProps['allVariantProducts']): void
 
   /**
    * Check if some result is still loading before render the result.
@@ -121,9 +80,7 @@ function SKUMatrixSidebar({
   size = 'partial',
   children,
   columns,
-  allVariantProducts,
   buyProps,
-  onChangeItems,
   loading,
   formatter,
   ...otherProps
@@ -132,14 +89,10 @@ function SKUMatrixSidebar({
   const {
     open,
     setOpen,
-    onChangeAllVariantProducts,
+    setAllVariantProducts,
     allVariantProducts: allVariantProductsFromHook,
     handleChangeQuantityItem,
   } = useSKUMatrix()
-
-  useEffect(() => {
-    onChangeAllVariantProducts(allVariantProducts)
-  }, [allVariantProducts])
 
   const cartDetails = useMemo(() => {
     return allVariantProductsFromHook.reduce(
@@ -152,15 +105,13 @@ function SKUMatrixSidebar({
   }, [allVariantProductsFromHook])
 
   function resetQuantityItems() {
-    onChangeAllVariantProducts(
-      allVariantProductsFromHook.map((item) => ({ ...item, quantity: 0 }))
+    setAllVariantProducts((prev) =>
+      prev.map((item) => ({ ...item, quantity: 0 }))
     )
   }
 
   function handleQuantitySelectorChange(id: string, value: number) {
-    const response = handleChangeQuantityItem(id, value)
-
-    onChangeItems?.(response)
+    handleChangeQuantityItem(id, value)
   }
 
   const totalColumnsSkeletonLength =
