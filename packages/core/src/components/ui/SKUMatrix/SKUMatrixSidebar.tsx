@@ -4,43 +4,11 @@ import {
   useSKUMatrix,
 } from '@faststore/ui'
 import { gql } from '@generated/gql'
-import { useMemo } from 'react'
 import { useBuyButton } from 'src/sdk/cart/useBuyButton'
 import { usePDP } from 'src/sdk/overrides/PageProvider'
 import { useAllVariantProducts } from 'src/sdk/product/useAllVariantProducts'
 
 interface SKUMatrixProps extends UISKUMatrixSidebarProps {}
-
-interface teste {
-  sku: string
-  name: string
-  image: Array<{ url: string; alternateName: string }>
-  offers: {
-    highPrice: number
-    lowPrice: number
-    lowPriceWithTaxes: number
-    offerCount: number
-    priceCurrency: string
-    offers: Array<{
-      listPrice: number
-      listPriceWithTaxes: number
-      sellingPrice: number
-      priceCurrency: string
-      price: number
-      priceWithTaxes: number
-      priceValidUntil: string
-      itemCondition: string
-      availability: string
-      quantity: number
-    }>
-  }
-  additionalProperty: Array<{
-    propertyID: string
-    value: any
-    name: string
-    valueReference: any
-  }>
-}
 
 function SKUMatrixSidebar(props: SKUMatrixProps) {
   const {
@@ -49,55 +17,24 @@ function SKUMatrixSidebar(props: SKUMatrixProps) {
 
   const { allVariantProducts: allVariantProductsFromHook, open } =
     useSKUMatrix()
-  const { data: client, isValidating } = useAllVariantProducts(product.id, open)
+  const { data: clientData, isValidating } = useAllVariantProducts(
+    product.id,
+    open
+  )
 
   const {
     gtin,
     unitMultiplier,
     brand,
     additionalProperty,
+    isVariantOf,
     offers: {
       offers: [{ seller }],
     },
   } = product
 
-  const formattedVariantProducts = useMemo(() => {
-    const response = (
-      client?.product.isVariantOf.skuVariants.allVariantProducts ?? []
-    ).map((item: teste) => {
-      const formatedAditionalProperties = item.additionalProperty.reduce<{
-        [key: string]: any
-      }>(
-        (acc, prop) => ({
-          ...acc,
-          [prop.name.toLowerCase()]: prop.value,
-        }),
-        {}
-      )
-
-      const outOfStock =
-        item.offers.offers[0].availability === 'https://schema.org/OutOfStock'
-
-      return {
-        id: item.sku,
-        name: item.name,
-        image: {
-          url: item.image[0].url,
-          alternateName: item.image[0].alternateName,
-        },
-        inventory: item.offers.offers[0].quantity,
-        availability: outOfStock ? 'outOfStock' : 'available',
-        price: item.offers.offers[0].price,
-        quantity: 0,
-        specification: formatedAditionalProperties,
-        offers: item.offers,
-      }
-    })
-    return response
-  }, [client?.product.isVariantOf.skuVariants.allVariantProducts])
-
   const buyButtonProps = allVariantProductsFromHook
-    .filter((item) => item.quantity)
+    .filter((item) => item.selectedCount)
     .map((item) => {
       const {
         offers: {
@@ -105,7 +42,6 @@ function SKUMatrixSidebar(props: SKUMatrixProps) {
         },
       } = item
 
-      // FIXME - Rever essa lógica
       return {
         id: item.id,
         price,
@@ -113,19 +49,18 @@ function SKUMatrixSidebar(props: SKUMatrixProps) {
         listPrice,
         listPriceWithTaxes,
         seller,
-        quantity: item.quantity,
+        quantity: item.selectedCount,
         itemOffered: {
           sku: item.id,
           name: item.name,
           gtin,
           image: [item.image],
           brand,
-          // FIXME - Rever
           isVariantOf: {
-            ...client.product.isVariantOf,
+            ...isVariantOf,
             skuVariants: {
-              ...client.product.isVariantOf.skuVariants,
-              activeVariations: item.specification,
+              ...isVariantOf.skuVariants,
+              activeVariations: item.specifications,
             },
           },
           additionalProperty,
@@ -141,7 +76,7 @@ function SKUMatrixSidebar(props: SKUMatrixProps) {
       buyProps={buyProps}
       title={product.isVariantOf.name ?? ''}
       loading={isValidating}
-      allVariantProducts={formattedVariantProducts}
+      allVariantProducts={clientData}
       {...props}
     />
   )

@@ -4,11 +4,18 @@ import type { ReactNode } from 'react'
 interface IAllVariantProducts {
   id: string
   name: string
-  image: { url: string; alternateName: string }
-  availability: string
+  image: {
+    url: string
+    alternateName: string
+  }
   inventory: number
+  availability: string
   price: number
-  quantity: number
+  listPrice: number
+  priceWithTaxes: number
+  listPriceWithTaxes: number
+  specifications: Record<string, string>
+  selectedCount: number
   offers: {
     highPrice: number
     lowPrice: number
@@ -27,9 +34,6 @@ interface IAllVariantProducts {
       availability: string
       quantity: number
     }>
-  }
-  specification: {
-    [key: string]: any
   }
 }
 
@@ -54,7 +58,7 @@ function SKUMatrixProvider({ children }: { children: ReactNode }) {
     (id: string, value: number) => {
       const data = [...allVariantProducts]
       const findedSKU = data.find((item) => item.id === id)!
-      findedSKU.quantity = value
+      findedSKU.selectedCount = value
 
       setAllVariantProducts(data)
 

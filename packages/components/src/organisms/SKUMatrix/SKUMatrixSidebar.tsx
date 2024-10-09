@@ -58,12 +58,18 @@ export interface SKUMatrixSidebarProps extends HTMLAttributes<HTMLDivElement> {
   allVariantProducts: {
     id: string
     name: string
-    image: { url: string; alternateName: string }
-    availability: string
+    image: {
+      url: string
+      alternateName: string
+    }
     inventory: number
+    availability: string
     price: number
-    quantity: number
-    specification: { [key: string]: any }
+    listPrice: number
+    priceWithTaxes: number
+    listPriceWithTaxes: number
+    specifications: Record<string, string>
+    selectedCount: number
     offers: {
       highPrice: number
       lowPrice: number
@@ -138,8 +144,8 @@ function SKUMatrixSidebar({
   const cartDetails = useMemo(() => {
     return allVariantProductsFromHook.reduce(
       (acc, product) => ({
-        amount: acc.amount + product.quantity,
-        subtotal: acc.subtotal + product.quantity * product.price,
+        amount: acc.amount + product.selectedCount,
+        subtotal: acc.subtotal + product.selectedCount * product.price,
       }),
       { amount: 0, subtotal: 0 }
     )
@@ -253,7 +259,7 @@ function SKUMatrixSidebar({
                       key={`${variantProduct.name}-${variantProduct.id}-${value}`}
                       align="left"
                     >
-                      {variantProduct.specification[value]}
+                      {variantProduct.specifications[value]}
                     </TableCell>
                   ))}
 
@@ -297,9 +303,9 @@ function SKUMatrixSidebar({
                         max={variantProduct.inventory}
                         disabled={
                           !variantProduct.inventory ||
-                          variantProduct.availability === ''
+                          variantProduct.availability === 'outOfStock'
                         }
-                        initial={variantProduct.quantity}
+                        initial={variantProduct.selectedCount}
                         onChange={(value) =>
                           handleQuantitySelectorChange(variantProduct.id, value)
                         }

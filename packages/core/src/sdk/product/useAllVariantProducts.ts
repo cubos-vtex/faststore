@@ -26,6 +26,7 @@ type FormattedVariantProduct = {
     alternateName: string
   }
   inventory: number
+  selectedCount: number
   availability: string
   offers: ClientAllVariantProductsQueryQuery['product']['isVariantOf']['skuVariants']['allVariantProducts'][0]['offers']
   price: number
@@ -59,50 +60,50 @@ export const useAllVariantProducts = <
     }
   }, [channel, locale, productID])
 
-  return useQuery<
-    ClientProductQueryQuery & T,
-    ClientProductQueryQueryVariables
-  >(query, variables, {
-    fallbackData,
-    revalidateOnMount: true,
-    doNotRun: !enabled,
-    onSuccess: (
-      data: ClientAllVariantProductsQueryQuery
-    ): FormattedVariantProduct[] => {
-      return data.product.isVariantOf.skuVariants.allVariantProducts.map(
-        (item) => {
-          const formattedAdditionalProperties = item.additionalProperty.reduce<{
-            [key: string]: any
-          }>(
-            (acc, prop) => ({
-              ...acc,
-              [prop.name.toLowerCase()]: prop.value,
-            }),
-            {}
-          )
+  return useQuery<FormattedVariantProduct[], ClientProductQueryQueryVariables>(
+    query,
+    variables,
+    {
+      fallbackData,
+      revalidateOnMount: true,
+      doNotRun: !enabled,
+      onSuccess: (data: ClientAllVariantProductsQueryQuery) => {
+        return data.product.isVariantOf.skuVariants.allVariantProducts.map(
+          (item) => {
+            const specifications = item.additionalProperty.reduce<{
+              [key: string]: any
+            }>(
+              (acc, prop) => ({
+                ...acc,
+                [prop.name.toLowerCase()]: prop.value,
+              }),
+              {}
+            )
 
-          const outOfStock =
-            item.offers.offers[0].availability ===
-            'https://schema.org/OutOfStock'
+            const outOfStock =
+              item.offers.offers[0].availability ===
+              'https://schema.org/OutOfStock'
 
-          return {
-            id: item.sku,
-            name: item.name,
-            image: {
-              url: item.image[0].url,
-              alternateName: item.image[0].alternateName,
-            },
-            inventory: item.offers.offers[0].quantity,
-            availability: outOfStock ? 'outOfStock' : 'available',
-            price: item.offers.offers[0].price,
-            listPrice: item.offers.offers[0].listPrice,
-            priceWithTaxes: item.offers.offers[0].priceWithTaxes,
-            listPriceWithTaxes: item.offers.offers[0].listPriceWithTaxes,
-            specifications: formattedAdditionalProperties,
-            offers: item.offers,
+            return {
+              id: item.sku,
+              name: item.name,
+              image: {
+                url: item.image[0].url,
+                alternateName: item.image[0].alternateName,
+              },
+              inventory: item.offers.offers[0].quantity,
+              availability: outOfStock ? 'outOfStock' : 'available',
+              price: item.offers.offers[0].price,
+              listPrice: item.offers.offers[0].listPrice,
+              priceWithTaxes: item.offers.offers[0].priceWithTaxes,
+              listPriceWithTaxes: item.offers.offers[0].listPriceWithTaxes,
+              specifications,
+              offers: item.offers,
+              selectedCount: 0,
+            }
           }
-        }
-      )
-    },
-  })
+        )
+      },
+    }
+  )
 }
