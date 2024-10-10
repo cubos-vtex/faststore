@@ -94,7 +94,7 @@ export const useAllVariantProducts = <
                   alternateName: item.image[0].alternateName,
                 },
                 inventory: item.offers.offers[0].quantity,
-                availability: outOfStock ? 'outOfStock' : 'available',
+                availability: outOfStock ? 'outofstock' : 'available',
                 price: item.offers.offers[0].price,
                 listPrice: item.offers.offers[0].listPrice,
                 priceWithTaxes: item.offers.offers[0].priceWithTaxes,
@@ -106,7 +106,7 @@ export const useAllVariantProducts = <
             }
           )
 
-        callBack(formattedData)
+        callBack(formattedData.sort((a, b) => a.name.localeCompare(b.name)))
       },
     }
   )
