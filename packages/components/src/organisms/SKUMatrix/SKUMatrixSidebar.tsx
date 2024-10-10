@@ -117,7 +117,7 @@ function SKUMatrixSidebar({
   }
 
   const totalColumnsSkeletonLength =
-    Object.values(columns).length + (columns.additionalColumns?.length ?? 0) - 1
+    Object.keys(columns).length - 1 + (columns.additionalColumns?.length ?? 0)
 
   return (
     <SlideOver
