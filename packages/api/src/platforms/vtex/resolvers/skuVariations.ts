@@ -27,8 +27,7 @@ export const SkuVariants: Record<string, Resolver<Root>> = {
     ),
 
   availableVariations: (root, args) => {
-    const dominantVariantName =
-      (args as SlugsMapArgs).dominantVariantName ?? root.variations[0]?.name
+    const dominantVariantName = (args as SlugsMapArgs).dominantVariantName ?? root.variations[0]?.name
     const activeVariations = getActiveSkuVariations(root.variations)
 
     const activeDominantVariationValue = activeVariations[dominantVariantName]
