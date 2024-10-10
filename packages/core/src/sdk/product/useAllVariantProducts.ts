@@ -3,7 +3,6 @@ import { useMemo } from 'react'
 import { gql } from '@generated'
 import type {
   ClientAllVariantProductsQueryQuery,
-  ClientProductQueryQuery,
   ClientProductQueryQueryVariables,
 } from '@generated/graphql'
 
