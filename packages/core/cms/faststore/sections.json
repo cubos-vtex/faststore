@@ -1638,7 +1638,7 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "title": "Column name",
+                  "title": "SKU name column label",
                   "type": "string",
                   "default": "Name"
                 },
@@ -1662,7 +1662,7 @@
                   }
                 },
                 "availability": {
-                  "title": "Column availability",
+                  "title": "Availability column label",
                   "type": "object",
                   "properties": {
                     "label": {
@@ -1684,12 +1684,12 @@
                   }
                 },
                 "price": {
-                  "title": "Column price",
+                  "title": "Price column label",
                   "type": "string",
                   "default": "Price"
                 },
                 "quantitySelector": {
-                  "title": "Column quantity",
+                  "title": "Quantity selector column label",
                   "type": "string",
                   "default": "Quantity"
                 }
