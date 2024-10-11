@@ -4,7 +4,6 @@ import {
   useSKUMatrix,
 } from '@faststore/ui'
 import { gql } from '@generated/gql'
-import { useEffect } from 'react'
 import { useBuyButton } from 'src/sdk/cart/useBuyButton'
 import { usePDP } from 'src/sdk/overrides/PageProvider'
 import { useAllVariantProducts } from 'src/sdk/product/useAllVariantProducts'
