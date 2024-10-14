@@ -1901,11 +1901,6 @@ export const ProductDetailsFragment_ProductFragmentDoc =
   isVariantOf {
     name
     productGroupID
-    skuVariants {
-      activeVariations
-      slugsMap
-      availableVariations
-    }
   }
   image {
     url
@@ -2208,7 +2203,7 @@ export const ServerCollectionPageQueryDocument = {
 export const ServerProductQueryDocument = {
   __meta__: {
     operationName: 'ServerProductQuery',
-    operationHash: '46103bee661405bde706d72126fdbf9b0a0c9e6e',
+    operationHash: '59d53edc20e918b9ac3b89e52e1eb6343f71db18',
   },
 } as unknown as TypedDocumentString<
   ServerProductQueryQuery,
@@ -2262,7 +2257,7 @@ export const ClientProductGalleryQueryDocument = {
 export const ClientProductQueryDocument = {
   __meta__: {
     operationName: 'ClientProductQuery',
-    operationHash: '7d121ef8d4dc99174e64e4429a9b977b8bbebed8',
+    operationHash: '17eebe56abfc90a2e34761d871926a2475c32350',
   },
 } as unknown as TypedDocumentString<
   ClientProductQueryQuery,
