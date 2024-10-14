@@ -281,10 +281,6 @@ export const fragment = gql(`
         activeVariations
         slugsMap
         availableVariations
-        allVariantProducts {
-          name
-          productID
-        }
       }
     }
 

@@ -596,7 +596,6 @@ export type ShippingSla = {
 export type SkuVariants = {
   /** SKU property values for the current SKU. */
   activeVariations: Maybe<Scalars['ActiveVariations']['output']>
-  allVariantProducts: Maybe<Array<StoreProduct>>
   /** All available options for each SKU variant property, indexed by their name. */
   allVariantsByName: Maybe<Scalars['VariantsByName']['output']>
   /**
@@ -616,10 +615,6 @@ export type SkuVariants = {
    * considered the dominant one.
    */
   slugsMap: Maybe<Scalars['SlugsMap']['output']>
-}
-
-export type SkuVariantsAllVariantProductsArgs = {
-  productID: InputMaybe<Scalars['String']['input']>
 }
 
 export type SkuVariantsAvailableVariationsArgs = {
@@ -1197,7 +1192,6 @@ export type ProductDetailsFragment_ProductFragment = {
       activeVariations: any | null
       slugsMap: any | null
       availableVariations: any | null
-      allVariantProducts: Array<{ name: string; productID: string }> | null
     } | null
   }
   image: Array<{ url: string; alternateName: string }>
@@ -1306,7 +1300,6 @@ export type ServerProductQueryQuery = {
         activeVariations: any | null
         slugsMap: any | null
         availableVariations: any | null
-        allVariantProducts: Array<{ name: string; productID: string }> | null
       } | null
     }
     additionalProperty: Array<{
@@ -1536,7 +1529,6 @@ export type ClientProductQueryQuery = {
         activeVariations: any | null
         slugsMap: any | null
         availableVariations: any | null
-        allVariantProducts: Array<{ name: string; productID: string }> | null
       } | null
     }
     image: Array<{ url: string; alternateName: string }>
@@ -1819,10 +1811,6 @@ export const ProductDetailsFragment_ProductFragmentDoc =
       activeVariations
       slugsMap
       availableVariations
-      allVariantProducts {
-        name
-        productID
-      }
     }
   }
   image {
@@ -2072,7 +2060,7 @@ export const ServerCollectionPageQueryDocument = {
 export const ServerProductQueryDocument = {
   __meta__: {
     operationName: 'ServerProductQuery',
-    operationHash: 'e855903879c6504e90269e6e010549bc6de933eb',
+    operationHash: '46103bee661405bde706d72126fdbf9b0a0c9e6e',
   },
 } as unknown as TypedDocumentString<
   ServerProductQueryQuery,
@@ -2117,7 +2105,7 @@ export const ClientProductGalleryQueryDocument = {
 export const ClientProductQueryDocument = {
   __meta__: {
     operationName: 'ClientProductQuery',
-    operationHash: '47aa22eb750cb2c529e5eeafb921bfeadb67db71',
+    operationHash: '7d121ef8d4dc99174e64e4429a9b977b8bbebed8',
   },
 } as unknown as TypedDocumentString<
   ClientProductQueryQuery,
