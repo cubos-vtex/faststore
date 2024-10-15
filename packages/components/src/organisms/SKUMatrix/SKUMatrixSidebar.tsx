@@ -212,7 +212,7 @@ function SKUMatrixSidebar({
                       key={`${variantProduct.name}-${variantProduct.id}-${value}`}
                       align="left"
                     >
-                      {variantProduct.specifications[value]}
+                      {variantProduct.specifications[value.toLowerCase()]}
                     </TableCell>
                   ))}
 
