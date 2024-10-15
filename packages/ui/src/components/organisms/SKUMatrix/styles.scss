@@ -5,32 +5,32 @@
 
   // Default properties
 
-	// Background
-  --fs-sku-matrix-sidebar-bkg-color									: var(--fs-color-neutral-0);
+  // Background
+  --fs-sku-matrix-sidebar-bkg-color				: var(--fs-color-neutral-0);
 
-	// Title
-  --fs-sku-matrix-sidebar-title-size								: var(--fs-text-size-6);
-  --fs-sku-matrix-sidebar-title-text-weight					: var(--fs-text-weight-semibold);
+  // Title
+  --fs-sku-matrix-sidebar-title-size				: var(--fs-text-size-6);
+  --fs-sku-matrix-sidebar-title-text-weight			: var(--fs-text-weight-semibold);
 
-	// Cell
+  // Cell
   --fs-sku-matrix-sidebar-table-cell-font-size			: var(--fs-text-size-0);
   --fs-sku-matrix-sidebar-table-cell-text-weight		: var(--fs-text-weight-medium);
 
-	// Font weight
-  --fs-sku-matrix-sidebar-text-weight-medium				: var(--fs-text-weight-medium);
+  // Font weight
+  --fs-sku-matrix-sidebar-text-weight-medium			: var(--fs-text-weight-medium);
   --fs-sku-matrix-sidebar-text-weight-semibold			: var(--fs-text-weight-semibold);
 
-	// Spacing
-  --fs-sku-matrix-sidebar-spacing-2									: var(--fs-spacing-2);
-  --fs-sku-matrix-sidebar-spacing-3									: var(--fs-spacing-3);
-  --fs-sku-matrix-sidebar-spacing-4									: var(--fs-spacing-4);
-  --fs-sku-matrix-sidebar-spacing-8									: var(--fs-spacing-8);
+  // Spacing
+  --fs-sku-matrix-sidebar-spacing-2				: var(--fs-spacing-2);
+  --fs-sku-matrix-sidebar-spacing-3				: var(--fs-spacing-3);
+  --fs-sku-matrix-sidebar-spacing-4				: var(--fs-spacing-4);
+  --fs-sku-matrix-sidebar-spacing-8				: var(--fs-spacing-8);
 
-	// Radius
-  --fs-sku-matrix-sidebar-button-radius-pill				: var(--fs-border-radius-pill);
+  // Radius
+  --fs-sku-matrix-sidebar-button-radius-pill			: var(--fs-border-radius-pill);
 
   // Partial
-  --fs-sku-matrix-slide-over-partial-gap						: calc(2 * var(--fs-grid-padding));
+  --fs-sku-matrix-slide-over-partial-gap			: calc(2 * var(--fs-grid-padding));
   --fs-sku-matrix-slide-over-partial-width-mobile		: calc(100vw - var(--fs-sku-matrix-slide-over-partial-gap));
 
   // --------------------------------------------------------
