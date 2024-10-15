@@ -1,12 +1,13 @@
 @layer components {
   .section {
     // Taxes label
-    --fs-product-details-taxes-label-color: var(--fs-color-info-text);
-    --fs-product-details-taxes-text-size: var(--fs-text-size-tiny);
-    --fs-product-details-taxes-text-weight: var(--fs-text-weight-regular);
+    --fs-product-details-taxes-label-color      : var(--fs-color-info-text);
+    --fs-product-details-taxes-text-size        : var(--fs-text-size-tiny);
+    --fs-product-details-taxes-text-weight      : var(--fs-text-weight-regular);
 
-    --fs-product-details-separator-color: var(--fs-color-neutral-2);
-    --fs-product-details-separator-color-text: var(--fs-color-text-light);
+    // Separator colors
+    --fs-product-details-separator-color        : var(--fs-color-neutral-2);
+    --fs-product-details-separator-color-text   : var(--fs-color-text-light);
 
     margin-top: 0;
 
