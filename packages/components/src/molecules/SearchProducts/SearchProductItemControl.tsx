@@ -61,7 +61,7 @@ const SearchProductItemControl = forwardRef<
     }
   }, [statusAddToCart])
 
-	const showSKUMatrixControl = availability && hasVariants;
+  const showSKUMatrixControl = availability && hasVariants;
 
   return (
     <div
