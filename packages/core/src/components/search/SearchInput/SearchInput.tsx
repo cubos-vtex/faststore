@@ -19,7 +19,9 @@ import {
   Icon as UIIcon,
   IconButton as UIIconButton,
   SearchInput as UISearchInput,
+  useCSVParser,
   useOnClickOutside,
+  type CSVData,
 } from '@faststore/ui'
 
 import type {
@@ -34,10 +36,16 @@ import useSearchHistory from 'src/sdk/search/useSearchHistory'
 import useSuggestions from 'src/sdk/search/useSuggestions'
 
 import { formatSearchPath } from 'src/sdk/search/formatSearchPath'
+import { formatFileName, formatFileSize } from 'src/utils/utilities'
 
 const SearchDropdown = lazy(
   /* webpackChunkName: "SearchDropdown" */
   () => import('src/components/search/SearchDropdown')
+)
+
+const UploadFileDropdown = lazy(
+  /* webpackChunkName: "UploadFileDropdown" */
+  () => import('src/components/search/UploadFileDropdown')
 )
 
 const UISearchInputField = dynamic<UISearchInputFieldProps & any>(() =>
@@ -84,6 +92,7 @@ const SearchInput = forwardRef<SearchInputRef, SearchInputProps>(
   ) {
     const { hidden } = otherProps
     const [searchQuery, setSearchQuery] = useState<string>('')
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
     const [
       customSearchDropdownVisibleCondition,
       setCustomSearchDropdownVisibleCondition,
@@ -99,6 +108,19 @@ const SearchInput = forwardRef<SearchInputRef, SearchInputProps>(
     const { addToSearchHistory } = useSearchHistory()
     const router = useRouter()
 
+    const [csvData, setCsvData] = useState<CSVData | null>(null)
+
+    const {
+      error: csvError,
+      isProcessing: isCsvProcessing,
+      onParseFile,
+      onClearError,
+      onGenerateTemplate,
+    } = useCSVParser({
+      delimiter: ',',
+      skipEmptyLines: true,
+    })
+
     useImperativeHandle(ref, () => ({
       resetSearchInput: () => setSearchQuery(''),
     }))
@@ -112,28 +134,56 @@ const SearchInput = forwardRef<SearchInputRef, SearchInputProps>(
       setSearchDropdownVisible(false)
     }
 
-    const handleFileSelect = (files: File[]) => {
+    const handleFileSelect = async (files: File[]) => {
+      if (files.length === 0) return
+
       setHasFile(true)
+
+      onClearError()
+      const file = files[0]
+
+      const result = await onParseFile(file)
+
       setIsUploadOpen(true)
-      // TODO: Handle file upload logic
-      // setFileUploadVisible(false)
+
+      if (result) {
+        setCsvData(result)
+        // TODO: Use the parsed data for bulk search
+      }
     }
 
-    const handleDownloadTemplate = () => {
-      // Create a sample CSV template
-      const csvContent = 'Product ID,Quantity,Price\n001,10,99.99\n002,5,49.99'
-      const blob = new Blob([csvContent], { type: 'text/csv' })
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'template.csv'
-      a.click()
-      window.URL.revokeObjectURL(url)
+    const handleDownloadTemplate = async () => {
+      try {
+        const csvContent = await onGenerateTemplate()
+
+        if (csvContent) {
+          const blob = new Blob([csvContent], { type: 'text/csv' })
+          const url = window.URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = 'template.csv'
+          a.click()
+          window.URL.revokeObjectURL(url)
+        }
+      } catch (error) {
+        console.error('Failed to download template:', error)
+      }
+    }
+
+    const handleDismiss = () => {
+      setCsvData(null)
+      setFileUploadVisible(false)
+      onClearError()
+    }
+
+    const handleSearch = () => {
+      if (!csvData) return
     }
 
     useOnClickOutside(searchRef, () => {
       setSearchDropdownVisible(customSearchDropdownVisibleCondition ?? false)
       setFileUploadVisible(false)
+      setIsUploadModalOpen(false)
     })
 
     const { data, error } = useSuggestions(searchQueryDeferred)
@@ -174,6 +224,8 @@ const SearchInput = forwardRef<SearchInputRef, SearchInputProps>(
           >
             <UISearchInputField
               ref={ref}
+              showUploadButton
+              onUploadClick={() => setIsUploadModalOpen((prev) => !prev)}
               buttonProps={buttonProps}
               placeholder={placeholder}
               showAttachmentButton
@@ -212,10 +264,21 @@ const SearchInput = forwardRef<SearchInputRef, SearchInputProps>(
             {fileUploadVisible && (
               <FileUploadCard
                 isOpen={isUploadOpen || hasFile || fileUploadVisible}
-                onDismiss={() => setFileUploadVisible(false)}
+                onDismiss={handleDismiss}
                 onFileSelect={handleFileSelect}
                 onDownloadTemplate={handleDownloadTemplate}
+                formatterFileSize={formatFileSize}
+                formatterFileName={formatFileName}
+                onSearch={handleSearch}
+                isUploading={isCsvProcessing}
+                hasError={!!csvError}
               />
+            )}
+
+            {isUploadModalOpen && (
+              <Suspense fallback={null}>
+                <UploadFileDropdown />
+              </Suspense>
             )}
           </UISearchInput>
         )}
