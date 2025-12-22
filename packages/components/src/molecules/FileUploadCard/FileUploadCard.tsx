@@ -60,6 +60,14 @@ export interface FileUploadCardProps
    * Indicates if there was an error during file upload.
    */
   hasError?: boolean
+  /**
+   * Type of error when hasError is true.
+   */
+  errorType?: FileUploadErrorType
+  /**
+   * Custom error message to display when hasError is true.
+   */
+  errorMessage?: string
 }
 
 const FileUploadCard = ({
@@ -75,6 +83,8 @@ const FileUploadCard = ({
   formatterFileName,
   isUploading = false,
   hasError = false,
+  errorType: errorTypeProp,
+  errorMessage,
   ...otherProps
 }: FileUploadCardProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -103,6 +113,16 @@ const FileUploadCard = ({
     return () => window.removeEventListener('keydown', handleEscape)
   }, [isOpen, onDismiss])
 
+  useEffect(() => {
+    if (hasError && selectedFile) {
+      setUploadState('error')
+      setErrorType(errorTypeProp ?? 'unexpected')
+    } else if (!hasError && selectedFile && !isUploading) {
+      setUploadState('completed')
+      setErrorType(undefined)
+    }
+  }, [hasError, selectedFile, isUploading, errorTypeProp])
+
   const isValidFileType = (file: File): boolean => {
     const fileName = file.name.toLowerCase()
     const validExtensions = ['.csv']
@@ -115,16 +135,16 @@ const FileUploadCard = ({
       const file = files[0]
       setSelectedFile(file)
 
-      // Validate file type
       if (!isValidFileType(file)) {
         setUploadState('error')
         setErrorType('unsupported')
         return
       }
 
+      setErrorType(undefined)
+
       if (isUploading) {
         setUploadState('uploading')
-        setErrorType(undefined)
       } else {
         setUploadState('completed')
       }
@@ -157,20 +177,19 @@ const FileUploadCard = ({
       const file = files[0]
       setSelectedFile(file)
 
-      // Validate file type
       if (!isValidFileType(file)) {
         setUploadState('error')
         setErrorType('unsupported')
         return
       }
 
+      setErrorType(undefined)
+
       if (isUploading) {
         setUploadState('uploading')
       } else {
         setUploadState('completed')
       }
-
-      setErrorType(undefined)
 
       if (onFileSelect) {
         onFileSelect(files)
@@ -179,7 +198,6 @@ const FileUploadCard = ({
   }
 
   const triggerFileInput = () => {
-    // Reset the input value to allow selecting the same file again
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -190,8 +208,7 @@ const FileUploadCard = ({
     if (onDownloadTemplate) {
       onDownloadTemplate()
     } else {
-      // Default template download
-      const csvContent = 'SKU,Quantity\nAB001,AB100,AB999\n2,5,49'
+      const csvContent = 'SKU,Quantity\nAB001,2\nAB100,5\nAB999,49'
       const blob = new Blob([csvContent], { type: 'text/csv' })
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -242,7 +259,8 @@ const FileUploadCard = ({
         <FileUploadStatus
           file={selectedFile}
           state={uploadState}
-          errorType={errorType}
+          errorType={errorTypeProp ?? errorType}
+          errorMessage={errorMessage}
           onRemove={handleRemoveFile}
           onSearch={handleSearch}
           onDownloadTemplate={handleDownloadTemplate}

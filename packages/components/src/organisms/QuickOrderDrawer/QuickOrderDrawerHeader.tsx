@@ -1,0 +1,45 @@
+import React from 'react'
+import Icon from '../../atoms/Icon'
+import { SlideOverHeader } from '../SlideOver'
+
+export type QuickOrderDrawerHeaderProps = {
+  title: string
+  titleCharLimit?: number
+  onCloseDrawer?: () => void
+}
+
+const QuickOrderDrawerHeader = ({
+  onCloseDrawer,
+  title,
+  titleCharLimit = 30,
+}: QuickOrderDrawerHeaderProps) => {
+  const leftOffset = Math.floor(titleCharLimit / 2) - 3
+  const rightOffset = Math.floor(titleCharLimit / 2)
+  const titleFormmated =
+    title.length > titleCharLimit
+      ? `${title.slice(0, leftOffset)}...${title.slice(-rightOffset)}`
+      : title
+
+  return (
+    <SlideOverHeader
+      data-fs-qod-header
+      closeBtnProps={{
+        variant: 'tertiary',
+        color: 'black',
+        'aria-label': 'Close quick order drawer',
+      }}
+      onClose={() => onCloseDrawer?.()}
+    >
+      <div data-fs-qod-title-container>
+        <div data-fs-qod-icon>
+          <div data-fs-qod-icon-completed>
+            <Icon name="Table" weight="bold" width={32} height={32} />
+          </div>
+        </div>
+        <div data-fs-qod-title>{titleFormmated}</div>
+      </div>
+    </SlideOverHeader>
+  )
+}
+
+export default QuickOrderDrawerHeader
